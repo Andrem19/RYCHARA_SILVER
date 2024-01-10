@@ -3,6 +3,8 @@ from kucoin_futures.client import Market
 from kucoin_futures.client import User
 from models.settings import Settings
 from decouple import config
+import requests
+import json
 import threading
 import math
 
@@ -252,6 +254,21 @@ class KuCoin:
         except Exception as e:
             print(f'Error [get_last_price]: {e}')
             return 0
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            response = requests.get('https://api-futures.kucoin.com/api/v1/contracts/active')
+            data = json.loads(response.text)
+            symbols = []
+            if len(data) > 0:
+                for contract in data['data']:
+                    s = contract['symbol'][:-1]
+                    symbols.append(s)
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
          
     @staticmethod
     def get_balance(coin: str):

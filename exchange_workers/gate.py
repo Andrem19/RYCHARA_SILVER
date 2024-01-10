@@ -50,6 +50,22 @@ class GT:
             print(f'Error [get_last_price]: {e}')
             return 0
     
+
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            data = GT.futures_api.list_futures_contracts(settle='usdt')
+            symbols = []
+            for contract in data:
+                s = f'{contract.name[:-5]}{contract.name[-4:]}'
+                symbols.append(s)
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
+
+
     @staticmethod
     def get_balance() -> float:
         try:

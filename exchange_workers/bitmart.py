@@ -50,7 +50,20 @@ class BM:
         except Exception as e:
             print(f'Error [get_last_price]: {e}')
             return 0
-    
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            symbols = []
+            res = requests.get('https://api-cloud.bitmart.com/contract/public/details')
+            data = json.loads(res.text)
+            for contract in data['data']['symbols']:
+                symbols.append(contract['symbol'])
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
+
     @staticmethod
     def get_balance():
         try:

@@ -79,7 +79,19 @@ class BN:
             print(f'Error: {e}')
             return 0
 
-    
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            symbols = []
+            coin_list = BN.client.exchange_info()
+            for symbol in coin_list['symbols']:
+                if symbol['contractType'] == 'PERPETUAL':
+                    symbols.append(symbol['symbol'])
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
         
     @staticmethod
     def get_symbol_info(coin: str) -> dict:

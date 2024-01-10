@@ -6,6 +6,25 @@ from models.position import Position
 from models.settings import Settings
 import shutil
 
+def find_common_elements(list1, list2, list3, list4, list5, list6, list7, list8):
+    # Преобразуйте списки в множества
+    set1 = set(list1)
+    set2 = set(list2)
+    set3 = set(list3)
+    set4 = set(list4)
+    set5 = set(list5)
+    set6 = set(list6)
+    set7 = set(list7)
+    set8 = set(list8)
+
+    # Используйте функцию set.intersection() для поиска общих элементов
+    common_elements_set = set1.intersection(set2, set3, set4, set5, set6, set7, set8)
+
+    # Преобразуйте множество обратно в список
+    common_elements_list = list(common_elements_set)
+
+    return common_elements_list
+
 
 def check_exclude_coins(exchange: str, coin: str):
     if exchange =='OK':

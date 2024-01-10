@@ -105,6 +105,20 @@ class BG:
             # Set the variables from shared_vars module
             BG.client = Client(api_key, secret_key, passphrase=passphrase)
 
+
+    @staticmethod
+    def is_contract_exist(coin:str)-> bool:
+        try:
+            symbols = []
+            coin_list = BG.client.mix_get_symbols_info('UMCBL')
+            for coin_info in coin_list['data']:
+                symbols.append(coin_info['symbol'][:-6])
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
+
     @staticmethod
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool, amount_coins = 0):
         try:

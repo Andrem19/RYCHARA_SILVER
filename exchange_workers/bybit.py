@@ -43,6 +43,21 @@ class BB:
             BB.recv_window = str(5000)
             BB.url = "https://api.bybit.com"
 
+
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            response = requests.get('https://api.bybit.com/v5/market/instruments-info?category=linear')
+            data = json.loads(response.text)
+            symbols = []
+            for contract in data['result']['list']:
+                symbols.append(contract['symbol'])
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
+
     @staticmethod
     def HTTP_Request(endPoint, method, payload, Info):
         global time_stamp

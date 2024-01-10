@@ -70,6 +70,19 @@ class BX:
             # Вывод информации об ошибке
             print(f"Code: {e.error_code}")
             print(f"Msg [cancel_all_orders]: {e.error_msg}")
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            symbols = []
+            contracts = BX.client.contracts()
+            for cont in contracts:
+                s = f'{cont["symbol"][:-5]}{cont["symbol"][-4:]}'
+                symbols.append(s)
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
 
     @staticmethod
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool, coin_amount = 0):

@@ -127,6 +127,24 @@ class OKX:
             OKX.futuresAPI = TradeAPI(api_key, secret_key, passphrase, False, '0', debug=False)
             OKX.publicDataAPI = PublicAPI(api_key, secret_key, passphrase, False, '0', debug=False)
 
+
+    @staticmethod
+    def is_contract_exist(coin:str)-> (bool, list):
+        try:
+            data = OKX.publicDataAPI.get_instruments('SWAP')
+
+            symbols = []
+            if 'data' in data:
+                for contract in data['data']:
+                    parts = contract['instId'].split('-')
+                    s = parts[0] + parts[1]
+                    symbols.append(s)
+            if coin in symbols:
+                return True, symbols
+            return False, symbols
+        except Exception as e:
+            print(f'Error: [is_contract_exist] {e}')
+
     @staticmethod
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool):
         try:
