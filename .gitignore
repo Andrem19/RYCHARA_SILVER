@@ -1,0 +1,15 @@
+cases*
+__pycache__
+finaly
+newdata
+results
+data
+venv
+res
+.env
+*.session
+*json
+final
+patterns*
+*.csv
+*.png
