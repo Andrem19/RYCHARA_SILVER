@@ -12,7 +12,6 @@ from exchange_workers.gate import GT
 from models.position import Position
 from helpers.redisdb import RD
 import helpers.telegr as tel
-import helpers.firebase as fb
 import shared_vars as sv
 import datetime
 import json
@@ -407,7 +406,7 @@ async def place_universal_order(settings: Settings, buy_sell: int):
             entry_pr = get_position_entry_price(position)
             lots = get_position_lots(position)
             current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe)
-            fb.write_settings('existing_positions', settings.name, f'{settings.coin}', current_position)
+            RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
             await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
             current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
             return True, current_position

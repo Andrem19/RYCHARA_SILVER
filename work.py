@@ -6,10 +6,8 @@ from google.api_core import datetime_helpers
 import json
 from helpers.redisdb import RD
 import helpers.db as db
-import helpers.firebase as fb
 import helpers.telegr as tel
 import helpers.services as ser
-import helpers.firebase as fb
 import helpers.profit as prof
 import datetime
 from datetime import timedelta
@@ -123,7 +121,7 @@ async def handle_position(cur_pos: Position, settings: Settings):
         with sv.global_var_lock:
             sv.coins_in_work.pop(settings.coin)
             rating_val = -1 if cur_pos.profit < 0 else 2
-            fb.change_rating(settings.coin, rating_val)
+            serv.change_rating_redis(settings.coin, rating_val)
             print(f'[thread: {settings.my_uid}] rating was changed')
             sv.position_was_close = True
 

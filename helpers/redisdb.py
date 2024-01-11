@@ -52,8 +52,7 @@ class RD:
             raise Exception("Redis client not initialized. Call RedisDatabase.initialize() first.")
         
         try:
-            RD._client.hset(dict_key, field, val)
-
+            res =RD._client.hset(dict_key, field, val)
         except redis.RedisError as e:
             print(f"[rewrite_one_field] Error with writing to Redis: {e}")
 

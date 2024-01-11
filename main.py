@@ -20,11 +20,11 @@ def on_signal_change(message):
     print(message)
     signal_collection = RD.load_all_key('coin')
     signals = hn.decision_maker(signal_collection)
-    print(f'on_signal_change len: {len(signals)}')
+    print(f'on_signal_change len')
     if signals != -1:
         for sig in signals:
             hn.handler(sig)
-            time.sleep(0.3)
+            time.sleep(0.5)
 
 def run_listner():
     pubsub = RD._client.pubsub()

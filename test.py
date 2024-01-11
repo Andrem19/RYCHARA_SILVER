@@ -14,6 +14,8 @@ import json
 from datetime import datetime
 import time
 from helpers.redisdb import RD
+RD.initialize()
+serv.change_rating_redis('ADAUSDT', 1)
 # def event_handler(message):
 #     print('Event received:', message)
 # def run_listner():
@@ -47,13 +49,11 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BG.init(sv.settings_gl)
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'BN'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-BN.init(sv.settings_gl)
-
-BN.open_order('market', 'IOTAUSDT', )
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BN'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BN.init(sv.settings_gl)
 
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'OK'

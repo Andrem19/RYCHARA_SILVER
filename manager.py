@@ -7,7 +7,6 @@ import shared_vars as sv
 from datetime import datetime
 from helpers.redisdb import RD
 import sys
-import helpers.firebase as fb
 
 
 async def main(args=None):

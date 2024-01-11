@@ -99,7 +99,7 @@ class BN:
             sym = None
             coin_list = BN.client.exchange_info()
             for symbol in coin_list['symbols']:
-                if symbol['symbol'] == 'XRPUSDT':
+                if symbol['symbol'] == coin:
                     sym = symbol
             return sym
         except Exception as e:

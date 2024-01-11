@@ -109,3 +109,7 @@ def check_coin_last_take(coin):
                 return True
         return False
             
+def change_rating_redis(coin: str, pl_mn: int):
+    coin_rating = int(RD.read_dict_field(f'coin:{coin}', 'rating'))
+    new_rating = coin_rating + pl_mn if coin_rating != 0 else 0
+    RD.rewrite_one_field(f'coin:{coin}', 'rating', new_rating)
