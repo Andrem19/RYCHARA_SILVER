@@ -5,6 +5,7 @@ from datetime import datetime
 from models.position import Position
 from models.settings import Settings
 import shutil
+from helpers.redisdb import RD
 
 def find_common_elements(list1, list2, list3, list4, list5, list6, list7, list8):
     # Преобразуйте списки в множества
@@ -25,33 +26,15 @@ def find_common_elements(list1, list2, list3, list4, list5, list6, list7, list8)
 
     return common_elements_list
 
-
-def check_exclude_coins(exchange: str, coin: str):
-    if exchange =='OK':
-        if coin in sv.exclude_okx:
-            return False
-    elif exchange == 'KC':
-        if coin in sv.exclude_kc:
-            return False
-    elif exchange == 'BG':
-        if coin in sv.exclude_bg:
-            return False
-    elif exchange == 'BX':
-        if coin in sv.exclude_bx:
-            return False
-    elif exchange == 'BM':
-        if coin in sv.exclude_bm:
-            return False
-    elif exchange == 'GT':
-        if coin in sv.exclude_gt:
-            return False
-    elif exchange == 'BB':
-        if coin in sv.exclude_bb:
-            return False
-    elif exchange == 'BN':
-        if coin in sv.exclude_bn:
-            return False
-    return True
+def get_last_saldo(name: str):
+    try:
+        result = RD.return_list(f'saldo:{name}', True)
+        dict_sal = json.loads(result)
+        last_saldo = float(dict_sal['saldo'])
+        return round(last_saldo, 4)
+    except Exception as e:
+        print(e)
+        return 0
 
 def write_timestamp(filename):
     with open(filename, 'w') as file:

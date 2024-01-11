@@ -21,6 +21,10 @@ class Settings:
         self.border_saldo: str = '03.12.23'
         self.pause: int = 5
 
+    def get_types_dict(self):
+        types_dict = {attr: type(getattr(self, attr)) for attr in vars(self)}
+        return types_dict
+    
     def to_json(self):
             with open(f"settings/settings_UNIVERSAL.json", "w") as file:
                 json.dump(self.__dict__, file)
@@ -32,7 +36,12 @@ class Settings:
                 setattr(self, key, value)
                 
     def from_dict(self, set_dict: dict):
+        types_dict = self.get_types_dict()
         for key, value in set_dict.items():
+            if key in types_dict:
+                expected_type = types_dict[key]
+                if not isinstance(value, expected_type):
+                    value = expected_type(value)
             setattr(self, key, value)
 
 # set = Settings()

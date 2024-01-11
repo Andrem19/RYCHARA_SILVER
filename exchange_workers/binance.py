@@ -133,7 +133,7 @@ class BN:
                 
             if reduceOnly:
                 side = 'SELL' if sd == 'Buy' else 'BUY'
-                params['quantity'] =  amount_coins
+                params['quantity'] =  abs(amount_coins)
                 # params['closePosition'] = 'true'
                 # params.pop('quantity')
 
@@ -168,7 +168,7 @@ class BN:
                     'price': round(price, pricePrecision),
                     'stopPrice': round(executePrice, pricePrecision),
                     'timeInForce': 'GTC',
-                    'quantity': amount_coins
+                    'quantity': abs(amount_coins)
                 }
             elif ordType == 'market':
                 params = {

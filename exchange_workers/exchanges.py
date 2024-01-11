@@ -10,11 +10,12 @@ from exchange_workers.bitmart import BM
 from exchange_workers.binance import BN
 from exchange_workers.gate import GT
 from models.position import Position
+from helpers.redisdb import RD
 import helpers.telegr as tel
 import helpers.firebase as fb
 import shared_vars as sv
 import datetime
-import asyncio
+import json
 import time
 
 def place_limit_order(settings: Settings, sd: str):
@@ -38,6 +39,27 @@ def place_limit_order(settings: Settings, sd: str):
         ord_id, pr = BN.open_order('market', settings.coin, sd, settings.amount_usdt, False)
     
     return ord_id, pr
+def is_contract_exist(coin: str):
+    res = False
+    contracts = []
+    with sv.global_var_lock:
+        if sv.settings_gl.exchange =='BB':
+            res, contracts = BB.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'KC':
+            res, contracts = KuCoin.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'OK':
+            res, contracts = OKX.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'BG':
+            res, contracts = BG.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'BX':
+            res, contracts = BX.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'BM':
+            res, contracts = BM.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'GT':
+            res, contracts = GT.is_contract_exist(coin)
+        elif sv.settings_gl.exchange == 'BN':
+            res, contracts = BN.is_contract_exist(coin)
+    return res, contracts
 
 def place_market_order(settings: Settings, sd: str):
     if sv.settings_gl.exchange =='BB':
@@ -348,7 +370,8 @@ async def place_universal_order(settings: Settings, buy_sell: int):
             entry_pr = get_position_entry_price(position)
             lots = get_position_lots(position)
             current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Limit', settings.timeframe)
-            fb.write_settings('existing_positions', settings.name, f'{settings.coin}', current_position)
+            # fb.write_settings('existing_positions', settings.name, f'{settings.coin}', current_position)
+            RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
             await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
             current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
             return True, current_position
