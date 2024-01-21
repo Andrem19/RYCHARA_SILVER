@@ -88,8 +88,10 @@ async def watchgdog():
     try:
         alives = []
         for val in sv.exchanges_info:
-            if sv.manager_instance == val['inst'] and val['status']==1:
-                inst_time_val = RD.get_val(f'watchdog:{val["ex"]}_{val["inst"]}')
+            print(val['inst'], val['status'])
+            if sv.manager_instance == int(val['inst']) and int(val['status'])==1:
+                inst_time_val = RD.get_val(f'watchdog:worker:{val["ex"]}_{val["inst"]}')
+                print(inst_time_val, f'watchdog:{val["ex"]}_{val["inst"]}')
                 if inst_time_val is None:
                     print('[watchgdog] istance doesnt exist')
                     return
@@ -103,8 +105,11 @@ async def watchgdog():
                 else:
                     alives.append(True)
         if all(alives):
+            print('send alive')
+            # error_status = RD.get_val('error:')
             await bc.alive('WORKER_BOT')
         else:
+            print('send not alive')
             await tel.send_inform_message('WORKER_BOT', f'Somthing wrong... Not all process alive!', '', False)
     except Exception as e:
         print(str(e))
@@ -114,9 +119,6 @@ async def watchgdog():
 async def check_process_pids():
     if not os.path.exists('process_pids.txt'):
         return
-    # Read the PIDs from file
-    # with open('process_pids.txt', 'r') as file:
-    #     pids = [int(pid.strip()) for pid in file.readlines()]
     pids = read_pids_from_file('process_pids.txt')
 
     for pid in pids:

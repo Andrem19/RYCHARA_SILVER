@@ -2,6 +2,14 @@ from decouple import config
 from telegram import Bot
 from models.settings import Settings
 import shared_vars as sv
+import time
+
+async def send_queue():
+    if len(sv.messages_queue)> 0:
+        for message in sv.messages_queue:
+            await send_inform_message(sv.settings_gl.telegram_token, message, '', False)
+            time.sleep(0.2)
+        sv.messages_queue.clear()
 
 async def send_inform_message(telegram_token, message, image_path: str, send_pic: bool):
     try:

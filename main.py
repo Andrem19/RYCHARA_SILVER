@@ -14,14 +14,15 @@ import hendler as hn
 from datetime import datetime
 import traceback
 import time
+import helpers.telegr as tel
 import sys
 
 def on_signal_change(message):
-    print(message)
     signal_collection = RD.load_all_key('coin')
     signals = hn.decision_maker(signal_collection)
-    print(f'on_signal_change len')
+    print(f'on_signal_change {datetime.now()}')
     if signals != -1:
+        print(f'{len(signals)} coins')
         for sig in signals:
             hn.handler(sig)
             time.sleep(0.5)
@@ -87,7 +88,7 @@ async def main(args=None):
             if pos_was_close:
                 pos_was_close = False
                 # on_signal_change(None, None, None)
-
+            await tel.send_queue()
             time.sleep(1)
         except Exception as e:
             print(f"Error [main while loop]: {e}")

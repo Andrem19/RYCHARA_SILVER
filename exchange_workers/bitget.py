@@ -7,82 +7,6 @@ import threading
 import requests
 import json
 
-
-round_coins = {
-    'XRPUSDT': 5,
-    'DOGEUSDT': 6,
-    'KAVAUSDT': 4,
-    'IOTAUSDT': 4,
-    'SANDUSDT': 4,
-    'EOSUSDT': 4,
-    'ATOMUSDT': 3,
-    'LINKUSDT': 3,
-    'ADAUSDT': 5,
-    'GRTUSDT': 5,
-    'AAVEUSDT': 3,
-    'FILUSDT': 3,
-    'ALGOUSDT': 4,
-    'EGLDUSDT': 2,
-    'AVAXUSDT': 3,
-    'XMRUSDT': 2,
-    'AXSUSDT': 4,
-    'NEOUSDT': 3,
-    'THETAUSDT': 4,
-    'GALAUSDT': 5,
-    'MANAUSDT': 4,
-    'FTMUSDT': 4,
-    'SOLUSDT': 4,
-    'DYDXUSDT': 3,
-    'UNIUSDT': 4,
-    'MINAUSDT': 4,
-    'HBARUSDT': 5,
-    'STXUSDT': 4,
-    'APTUSDT': 3,
-    'ARBUSDT': 4,
-    'APEUSDT': 3,
-    'OPUSDT': 4,
-    'INJUSDT': 3,
-    'QNTUSDT': 2,
-}
-
-# amount_lot = {
-#     'MATICUSDT': 0,
-#     'XRPUSDT': 0,
-#     'DOGEUSDT': 0,
-#     'KAVAUSDT': 1,
-#     'IOTAUSDT': 0,
-#     'SANDUSDT': 0,
-#     'EOSUSDT': 0,
-#     'ATOMUSDT': 0,
-#     'LINKUSDT': 0,
-#     'ADAUSDT': 0,
-#     'GRTUSDT': 1,
-#     'AAVEUSDT': 1,
-#     'FILUSDT': 1,
-#     'ALGOUSDT': 1,
-#     'EGLDUSDT': 1,
-#     'AVAXUSDT': 1,
-#     'XMRUSDT': 30,
-#     'AXSUSDT': 0.1,
-#     'NEOUSDT': 1,
-#     'THETAUSDT': 10,
-#     'GALAUSDT': 10,
-#     'MANAUSDT': 10,
-#     'FTMUSDT': 10,
-#     'SOLUSDT': 1,
-#     'DYDXUSDT': 1,
-#     'UNIUSDT': 1,
-#     'MINAUSDT': 1,
-#     'HBARUSDT': 100,
-#     'STXUSDT': 10,
-#     'APTUSDT': 1,
-#     'ARBUSDT': 10,
-#     'APEUSDT': 0.1,
-#     'OPUSDT': 1,
-#     'INJUSDT': 0.1,
-#     'QNTUSDT': 2,
-# }
-
 class BG:
 
     client: Client = None
@@ -125,10 +49,12 @@ class BG:
             coin_list = BG.client.mix_get_symbols_info('UMCBL')
             minTradeNum = 0
             sizeMultiplier = 0
+            pricePlace = 0
             for coin_info in coin_list['data']:
                 if coin_info['symbol'] == f'{coin}_UMCBL':
                     minTradeNum = float(coin_info['minTradeNum'])
                     sizeMultiplier = float(coin_info['sizeMultiplier'])
+                    pricePlace = int(coin_info['pricePlace'])
                     break
             curent_price = BG.get_last_price(coin)
 
@@ -149,7 +75,8 @@ class BG:
             if reduceOnly == True:
                 side = 'sell_single' if sd == 'Buy' else 'buy_single'
                 size = amount_coins
-            order = BG.client.mix_place_order(symbol=f'{coin}_UMCBL', marginCoin='USDT', size=str(size), side=side, price=round(pr, round_coins[coin]), orderType=ordType, reduceOnly=False)
+            order = BG.client.mix_place_order(symbol=f'{coin}_UMCBL', marginCoin='USDT', size=str(size), side=side, price=round(pr, pricePlace), orderType=ordType, reduceOnly=False)
+            print(order)
             return order['data']['orderId'], pr
         except Exception as e:
             print(f'Error: {e}')
@@ -158,6 +85,16 @@ class BG:
     @staticmethod
     def open_SL(ordType: str, coin: str, sd: str, amount_coins: float, open_price: float, SL_perc: float) -> str:
         try:
+            coin_list = BG.client.mix_get_symbols_info('UMCBL')
+            minTradeNum = 0
+            sizeMultiplier = 0
+            pricePlace = 0
+            for coin_info in coin_list['data']:
+                if coin_info['symbol'] == f'{coin}_UMCBL':
+                    minTradeNum = float(coin_info['minTradeNum'])
+                    sizeMultiplier = float(coin_info['sizeMultiplier'])
+                    pricePlace = int(coin_info['pricePlace'])
+                    break
             side = 'sell_single' if sd == 'Buy' else 'buy_single'
             price = 0
             if side == 'sell_single':
@@ -173,9 +110,9 @@ class BG:
                 size=str(size), 
                 side=side,
                 orderType=order_type,
-                triggerPrice=round(price, round_coins[coin]), 
+                triggerPrice=round(price, pricePlace), 
                 triggerType='fill_price',
-                executePrice=round(executePrice, round_coins[coin]),
+                executePrice=round(executePrice, pricePlace),
                 reduceOnly=True)
             return order['data']['orderId']
         except Exception as e:

@@ -26,7 +26,7 @@ async def open_position(settings: Settings, signal: int):
         target_len = settings.target_len
         print('start open position')
         time_start = datetime.datetime.now().timestamp()
-        res, cur_pos = await ex.place_universal_order(settings, signal)
+        res, cur_pos = await ex.take_position(settings, signal)
         if res:
             safe_ls_border = cur_pos.price_open * (1-settings.stop_loss) if signal == 1 else cur_pos.price_open * (1+settings.stop_loss)
             safe_tp_border = cur_pos.price_open * (1+settings.take_profit) if signal == 1 else cur_pos.price_open * (1-settings.take_profit)
@@ -43,24 +43,23 @@ async def open_position(settings: Settings, signal: int):
                 res, responce = ex.is_position_exist(ex.get_position_info(settings.coin, signal))
 
                 if duration_seconds >= target_len * 60 and not close_order and res:
-                    print(f'[thread: {settings.my_uid}] Time: {datetime.datetime.now()} time to close')
+                    print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} time to close')
                     ex.cancel_order(settings, cur_pos.order_sl_id, True)
-                    cur_pos.order_sl_id = ex.close_limit_time_finish(settings, cur_pos, last_price)
+                    ex.close_time_finish(settings, cur_pos)
                     cur_pos.price_close = last_price
-                    time.sleep(8)
+                    cur_pos.type_of_close = 'Market Time-Finish'
+                    close_order = True
+                    time.sleep(3)
                     res, responce = ex.is_position_exist(ex.get_position_info(settings.coin, signal))
                     if res:
-                        ex.cancel_order(settings, cur_pos.order_sl_id, True)
+                        print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} time to close [second try]')
                         ex.close_time_finish(settings, cur_pos)
                         cur_pos.price_close = ex.get_last_price(settings.coin)
                         cur_pos.type_of_close = 'Market Time-Finish'
-                    else:
-                        cur_pos.type_of_close = 'Limit Time-Finish'
-                    close_order = True
                 
                 if (last_price < safe_ls_border * (1-0.002) and signal == 1) or (last_price > safe_ls_border * (1+0.002) and signal == 2):
                     if not close_order and res:
-                        print(f'[thread: {settings.my_uid}] Time: {datetime.datetime.now()} save closing market')
+                        print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} save closing market')
                         ex.close_time_finish(settings, cur_pos)
                         cur_pos.price_close = ex.get_last_price(settings.coin)
                         cur_pos.type_of_close = 'Market Safe_SL-Lim'
@@ -110,7 +109,6 @@ async def handle_position(cur_pos: Position, settings: Settings):
         message = f'[thread: {settings.my_uid}] Handle position started'
         print(message)
         ex.cancel_all_orders(settings.coin, True, cur_pos.order_sl_id)
-        # last_saldo = db.get_last_saldo()
         last_saldo = serv.get_last_saldo(settings.name)
         new_balance = ex.get_balance()
         cur_pos.new_balance = round(new_balance, 4)
@@ -134,16 +132,14 @@ async def handle_position(cur_pos: Position, settings: Settings):
         cur_pos.profit_2 = prof.profit_counter(True, cur_pos.price_open, bs, cur_pos.price_close, settings.amount_usdt)
         new_saldo = last_saldo + profit
         saldo_dict = {
-            'tm': datetime.datetime.now().timestamp(),
+            'tm': datetime.datetime.now().strftime('%Y-%m-%d, %H:%M:%S'),
             'saldo': new_saldo
         }
-        # db.add_saldo([datetime.datetime.now().timestamp()*1000, new_saldo], f'_db/saldo.txt')
-        # db.add_pos_to_db(cur_pos, f'_db/history_pos.txt')
         
         RD.delete_one_field(f'exs_pos:{settings.name}', settings.coin)
         RD.add_val_to_list(f'saldo:{settings.name}', json.dumps(saldo_dict))
         RD.add_val_to_list(f'pos:{settings.name}', str(vars(cur_pos)))
-        if cur_pos.profit < 0 and cur_pos.profit_2 < 0:
+        if (cur_pos.profit < 0 and cur_pos.profit_2 < 0) or cur_pos.type_of_close != 'Market Time-Finish':
             RD.rewrite_one_field('increase_border', settings.coin, 12)
 
         icon = '✅'

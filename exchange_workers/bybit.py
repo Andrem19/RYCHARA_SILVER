@@ -11,7 +11,12 @@ import traceback
 import requests
 import threading
 import hmac
+import math
 import json
+
+def round_price(price, tick_size):
+    precision = int(round(-math.log(tick_size, 10)))
+    return round(price, precision)
 
 class BB:
 
@@ -33,9 +38,6 @@ class BB:
             # Check again after acquiring the lock in case another thread has already initialized the variables
             if BB.httpClient is not None:
                 return
-            
-            api_key = config(settings.API_KEY)
-            secret_key = config(settings.SECRET_KEY)
             
             BB.api_key = config(settings.API_KEY)
             BB.secret_key = config(settings.SECRET_KEY)
@@ -203,14 +205,14 @@ class BB:
             if reduceOnly:
                 size = 0
                 side = 'Buy' if side == 'Sell' else 'Sell'
-            
+            sz = round_price(size, qtyStep)
             params = {
                 "category": "linear",
                 "symbol": coin,
                 "side": side,
                 "positionIdx": 0,
                 "orderType": oType,
-                "qty": str(size),
+                "qty": str(sz),
                 "isLeverage": 10,
                 "timeInForce": "GTC",
                 "price": str(round(pr, priceScale)),
@@ -218,8 +220,9 @@ class BB:
             }
 
             params_str = json.dumps(params)
-
+            print(params_str)
             order = BB.HTTP_Request(endpoint, method, params_str, f"create_{ordType}_order")
+            print(order)
             data = json.loads(order)
             return data['result']['orderId'], pr
         except Exception as e:

@@ -23,3 +23,6 @@ coin_last_close = {
 high_vol = False
 
 position_was_close = False
+
+
+messages_queue = []

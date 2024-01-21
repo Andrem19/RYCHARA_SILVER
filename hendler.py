@@ -6,6 +6,7 @@ from exchange_workers.kucoin import KuCoin
 import exchange_workers.exchanges as ex
 from helpers.redisdb import RD
 import work
+import time
 from models.settings import Settings
 import threading
 import helpers.services as serv
@@ -31,7 +32,7 @@ def handler(sign_dic: dict):
         coin_symbol = sign_dic['name']
         signal = int(sign_dic['signal'])
         rating = int(sign_dic['rating'])
-        type_of_signal = int(sign_dic['type'])
+        koff = float(sign_dic['koff'])
 
         settings = Settings()
         set_dict = RD.read_dict('settings:worker')
@@ -43,7 +44,7 @@ def handler(sign_dic: dict):
             sv.coins_in_work[coin_symbol] = sign_dic
         
         settings.pause = int(exchanges_positions_limit['pause'])
-        settings.amount_usdt = int(exchanges_positions_limit['amount'])
+        settings.amount_usdt = int(exchanges_positions_limit['amount']) * koff
         settings.coin = coin_symbol
         settings.my_uid = str(uid)
         settings.coin_rating = rating
@@ -61,41 +62,31 @@ def handler(sign_dic: dict):
             settings.amount_usdt = amount_max
 
         settings.take_profit = settings.stop_loss * 7
-        settings.type_of_signal = type_of_signal
         close_thread = threading.Thread(target=asyncio.run, args=(work.open_position(settings, signal),))
         close_thread.start()
     else:
         print('[handler] didnt pass!')
 
-
 def decision_maker(signals: list):
-    numbers_of_signals = 0
-    res, coin_exchange_list = ex.is_contract_exist('BTCUSDT')
-    signal_collection = []
-    for value in signals:
-        if value['name'] not in coin_exchange_list:
-            continue
-        tm = value['timestamp']
-        timestamp = float(tm)
-        if timestamp+40 > datetime.now().timestamp() and value['signal'] !=3:
-            numbers_of_signals+=1
-            if numbers_of_signals > 3:
-                with sv.global_var_lock:
-                    sv.high_vol = True
-        if (timestamp+40 > datetime.now().timestamp() and value['signal'] != 3 and value['name'] not in sv.coins_in_work) or (timestamp == 111 and value['signal'] != 3):
-            signal_collection.append(value)
-        else:
-            continue
-    if len(signal_collection) > 0:
-        max_rating_dict = sort_dicts_by_rating(signal_collection)
-        if len(signal_collection) > 3:
-            with sv.global_var_lock:
-                sv.high_vol = True
-        # print(f'------------------------{datetime.now()}------------------------')
-        # print(f'Decisionmaker return signal: {max_rating_dict["signal"]} coin: {max_rating_dict["name"]} tf: {max_rating_dict["timeframe"]}')
-        # print(f'--------------------------------------------------------------------------')
-        return max_rating_dict
+    tm_now = time.time()
+    if any(tm_now - float(d['timestamp']) <= 40 or float(d['timestamp']) == 111 for d in signals):
+        res, coin_exchange_list = ex.is_contract_exist('BTCUSDT')
+        signal_collection = collect_signals(signals, coin_exchange_list, tm_now)
+        if signal_collection:
+            return signal_collection
     return -1
+
+def collect_signals(signals, coin_exchange_list, tm_now):
+    collection = []
+    for value in signals:
+        timestamp = float(value['timestamp'])
+        if value['name'] not in coin_exchange_list:
+            if int(value['signal']) != 3 and (timestamp+40 > tm_now or timestamp == 111):
+                sv.messages_queue.append(f'{sv.settings_gl.name} coin {value["name"]} is not exist on the exchange')
+            continue
+        if (timestamp+40 > tm_now and int(value['signal']) != 3 and value['name'] not in sv.coins_in_work) or (timestamp == 111 and int(value['signal']) != 3):
+            collection.append(value)
+    return collection
 
 
 def get_max_rating_dict(dict_list):

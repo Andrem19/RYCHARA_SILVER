@@ -4,6 +4,7 @@ from bingX import ClientError
 from models.settings import Settings
 from decouple import config
 import threading
+import traceback
 
 class BX:
 
@@ -102,7 +103,7 @@ class BX:
 
             side = 'BUY' if sd == 'Buy' else 'SELL'
             positionSide = 'BOTH'
-
+            lev_side = 'LONG' if sd == 'Buy' else 'SHORT'
             size = round(amount_usdt / curent_price, quantityPrecision)
             pr = 0
             if side == 'BUY':
@@ -112,7 +113,8 @@ class BX:
             if reduceOnly == True:
                 side = 'SELL' if side == 'BUY' else 'BUY'
                 size = coin_amount
-            
+            print(f'before order: {pr} {size} {positionSide}')
+            BX.client.switch_leverage(symbol=c, side=lev_side, leverage='5')
             order_info = BX.client.trade_order(
                 symbol=c,
                 type='MARKET',
@@ -121,6 +123,7 @@ class BX:
                 price=pr,
                 quantity=size,
             )
+            print(f'after order {order_info}')
             return order_info['order']['orderId'], order_info['order']['price']
 
         except ClientError as e:

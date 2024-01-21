@@ -104,7 +104,7 @@ class GT:
             return pos
         except GateApiException as e:
             print(f'Error [get_position]: {e}')
-            return 0
+            return {'entry_price': 0.0, 'unrealised_pnl': 0.0, 'size': 0.0}
     
     @staticmethod
     def open_order(coin: str, sd: str, amount_usdt: int, reduceOnly: bool):
@@ -145,12 +145,13 @@ class GT:
             triger_price = price * (1 + 0.001) if sd == 'Sell' else price * (1 - 0.001)
             order_type = 'plan-close-long-position' if sd == 'Buy' else 'plan-close-short-position'
             rule = 2 if sd == 'Buy' else 1
-            initial = FuturesInitialOrder(contract=c, size=0, price=str(price), close=True, tif='gtc', is_close=True)
+            initial = FuturesInitialOrder(contract=c, size=0, price=str(0), close=True, tif='ioc', is_close=True)
             trigger = FuturesPriceTrigger(strategy_type=0, price_type=2, price=str(round_price(triger_price, mark_price_round)), rule=rule)
             
-            
+            print(order_type)
             order = FuturesPriceTriggeredOrder(initial=initial, trigger=trigger, order_type=order_type)
             order_response = GT.futures_api.create_price_triggered_order('usdt', order)
+            print(order_response)
             return order_response.id
         except GateApiException as e:
             print(f'Error: {e}')
