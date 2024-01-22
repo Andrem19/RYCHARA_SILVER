@@ -13,7 +13,6 @@ class Settings:
         self.take_profit: float = 0.005
         self.message_timer: int = 40
         self.target_len: int = 3
-        self.coin_rating: int = 3
         self.my_uid: str = ''
         self.collector_bot: str = 'COLLECTOR'
         self.amount_usdt: float = 200

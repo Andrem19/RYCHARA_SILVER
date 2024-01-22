@@ -13,8 +13,8 @@ MAXIMUM_NUMBER_OF_API_CALL_TRIES = 3
 
 def get_kline(coin: str, number_candles: int, interv: int):
         try:
-            endpoint = f'/api/v3/klines?symbol={coin}&interval={interv}m&limit={number_candles}'
-            url = 'https://api2.binance.com' + endpoint# 'https://api.binance.com' + endpoint
+            endpoint = f'/fapi/v1/klines?symbol={coin}&interval={interv}m&limit={number_candles}'
+            url = 'https://fapi.binance.com' + endpoint
             response = requests.get(url).json()
 
             new_list = [[x[0], float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5])] for x in response]

@@ -31,7 +31,6 @@ def handler(sign_dic: dict):
         timeframe = int(sign_dic['timeframe'])
         coin_symbol = sign_dic['name']
         signal = int(sign_dic['signal'])
-        rating = int(sign_dic['rating'])
         koff = float(sign_dic['koff'])
 
         settings = Settings()
@@ -47,7 +46,6 @@ def handler(sign_dic: dict):
         settings.amount_usdt = int(exchanges_positions_limit['amount']) * koff
         settings.coin = coin_symbol
         settings.my_uid = str(uid)
-        settings.coin_rating = rating
         settings.target_len = target_len 
         settings.timeframe = timeframe
 
@@ -87,7 +85,6 @@ def collect_signals(signals, coin_exchange_list, tm_now):
         if (timestamp+40 > tm_now and int(value['signal']) != 3 and value['name'] not in sv.coins_in_work) or (timestamp == 111 and int(value['signal']) != 3):
             collection.append(value)
     return collection
-
 
 def get_max_rating_dict(dict_list):
     return copy.deepcopy(max(dict_list, key=lambda x: x['rating']))

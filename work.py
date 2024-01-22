@@ -118,9 +118,6 @@ async def handle_position(cur_pos: Position, settings: Settings):
         
         with sv.global_var_lock:
             sv.coins_in_work.pop(settings.coin)
-            rating_val = -1 if cur_pos.profit < 0 else 2
-            serv.change_rating_redis(settings.coin, rating_val)
-            print(f'[thread: {settings.my_uid}] rating was changed')
             sv.position_was_close = True
 
         

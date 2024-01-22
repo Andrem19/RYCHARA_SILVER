@@ -112,11 +112,16 @@ from helpers.redisdb import RD
 # for coin_info in coin_list['data']:
 #     if coin_info['symbol'] == f'{coin}_UMCBL':
 #         print(coin_info)
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'BN'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# BN.init(sv.settings_gl)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'BN'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+BN.init(sv.settings_gl)
+
+res, contr = BN.is_contract_exist('BSVUSDT')
+print(res)
+if 'BSVUSDT' in contr:
+    print('çontract exist')
 
 # res, pt = BN.open_order('market', 'GALUSDT', 'Sell', 20, False)
 # print(res, pt)
@@ -156,18 +161,18 @@ from helpers.redisdb import RD
 # res, cont = OKX.is_contract_exist('GLMRUSDT')
 # print(res, cont)
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'GT'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-GT.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'GT'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# GT.init(sv.settings_gl)
 
 # ord_id, pr = GT.open_order('KLAYUSDT', 'Sell', 20, False)
 # print(ord_id, pr)
 # pos = GT.get_position('KLAYUSDT')
 # print(pos)
-ord_id = GT.open_SL('KLAYUSDT', 'Sell', -88, 0.2268, 0.004)
-print(ord_id)
+# ord_id = GT.open_SL('KLAYUSDT', 'Sell', -88, 0.2268, 0.004)
+# print(ord_id)
 # position = GT.get_position('DOTUSDT')
 # print(position)
 # sv.settings_gl = Settings()
