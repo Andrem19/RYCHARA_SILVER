@@ -20,7 +20,7 @@ def handler(sign_dic: dict):
     with sv.global_var_lock:
         exchanges_positions_limit = RD.read_dict(f'individual_settings:{sv.settings_gl.name}')
         position_lenth = len(sv.coins_in_work)
-        if position_lenth >= int(exchanges_positions_limit['numbers']):
+        if position_lenth >= int(sign_dic['numbers']):
             return
     timestamp = float(sign_dic['timestamp'])
     is_position_exist, position = ex.is_position_exist(ex.get_position_info(sign_dic['name'], int(sign_dic['signal'])))
@@ -32,11 +32,12 @@ def handler(sign_dic: dict):
         coin_symbol = sign_dic['name']
         signal = int(sign_dic['signal'])
         koff = float(sign_dic['koff'])
+        type_of_signal = sign_dic['type_of_signal']
 
         settings = Settings()
         set_dict = RD.read_dict('settings:worker')
         sv.settings_gl.from_dict(set_dict)
-        amount_max = sv.settings_gl.amount_usdt
+        amount_max = sv.settings_gl.max_amount
 
         with sv.global_var_lock:
             settings = copy.deepcopy(sv.settings_gl)
@@ -44,18 +45,13 @@ def handler(sign_dic: dict):
         
         settings.pause = int(exchanges_positions_limit['pause'])
         settings.amount_usdt = int(exchanges_positions_limit['amount']) * koff
+
         settings.coin = coin_symbol
         settings.my_uid = str(uid)
         settings.target_len = target_len 
         settings.timeframe = timeframe
+        settings.stop_loss = sl
 
-        if settings.timeframe !=1 and sl < 0.01:
-            settings.stop_loss = 0.01
-        elif settings.timeframe !=1 and sl > 0.02:
-            settings.stop_loss = 0.02
-
-        if settings.timeframe == 1:
-            settings.stop_loss = 0.006
         if settings.amount_usdt > amount_max:
             settings.amount_usdt = amount_max
 

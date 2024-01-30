@@ -114,10 +114,13 @@ class GT:
             contract = GT.futures_api.get_futures_contract('usdt', c)
             mark_price_round = float(contract.mark_price_round)
             quanto_multiplier = float(contract.quanto_multiplier)
+            leverage_max = int(contract.leverage_max)
             order_size_min = float(contract.order_size_min)
             last_price=float(contract.last_price)
             close = False
+            lev = 20 if leverage_max >=20 else leverage_max
             size = (amount_usdt / last_price) // quanto_multiplier
+            GT.futures_api.update_position_leverage('usdt', c, lev)
             if sd == 'Sell':
                 size = 0-size
             if reduceOnly:

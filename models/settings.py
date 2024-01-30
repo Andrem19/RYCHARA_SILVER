@@ -15,7 +15,8 @@ class Settings:
         self.target_len: int = 3
         self.my_uid: str = ''
         self.collector_bot: str = 'COLLECTOR'
-        self.amount_usdt: float = 200
+        self.amount_usdt: float = 20
+        self.max_amount: int = 100
         self.type_of_signal: int = 1
         self.border_saldo: str = '03.12.23'
         self.pause: int = 5

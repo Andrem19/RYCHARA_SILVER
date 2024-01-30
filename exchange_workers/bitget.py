@@ -46,6 +46,10 @@ class BG:
     @staticmethod
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool, amount_coins = 0):
         try:
+            max_lev = BG.client.mix_get_leverage(f'{coin}_UMCBL')
+            lev = 20 if int(max_lev['data']['maxLeverage']) >= 20 else int(max_lev['data']['maxLeverage'])
+            BG.client.mix_adjust_leverage(f'{coin}_UMCBL', 'USDT', lev)
+            
             coin_list = BG.client.mix_get_symbols_info('UMCBL')
             minTradeNum = 0
             sizeMultiplier = 0

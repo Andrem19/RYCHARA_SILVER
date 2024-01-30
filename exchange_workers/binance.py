@@ -134,6 +134,7 @@ class BN:
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool, amount_coins: int = 0):
         try:
             create_client() #TODO try it
+            BN.client.change_leverage(coin, 20)
             coin_info = BN.get_symbol_info(coin)
             quantityPrecision = coin_info['quantityPrecision']
             pricePrecision = coin_info['pricePrecision']

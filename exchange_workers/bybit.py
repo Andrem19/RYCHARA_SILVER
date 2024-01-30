@@ -155,6 +155,7 @@ class BB:
                 inst = data['result']['list'][0]
                 instrument['priceScale'] = inst['priceScale']
                 instrument['qtyStep'] = inst['lotSizeFilter']['qtyStep']
+                instrument['max_lev'] = inst['leverageFilter']['maxLeverage']
                 return instrument
             else:
                 return None
@@ -182,6 +183,23 @@ class BB:
             print(f"Error [cancel_orders]: {e}")
             return None
 
+
+    @staticmethod
+    def set_leverage(symbol: str, leverage: int):
+        endpoint = '/v5/position/set-leverage'
+        method = 'POST'
+
+        params = {
+            "category": "linear",
+            "symbol": symbol,
+            "buyLeverage": f"{leverage}",
+            "sellLeverage": f"{leverage}"
+        }
+
+        params_str = json.dumps(params)
+
+        BB.HTTP_Request(endpoint, method, params_str, "set_leverage")
+
     @staticmethod
     def open_order(ordType: str, coin: str, sd: str, amount_usdt: int, reduceOnly: bool):
         try:
@@ -206,6 +224,8 @@ class BB:
                 size = 0
                 side = 'Buy' if side == 'Sell' else 'Sell'
             sz = round_price(size, qtyStep)
+            lev = 20 if float(acc['max_lev']) >= 20 else float(acc['max_lev'])
+            BB.set_leverage(coin, lev)
             params = {
                 "category": "linear",
                 "symbol": coin,
@@ -213,7 +233,7 @@ class BB:
                 "positionIdx": 0,
                 "orderType": oType,
                 "qty": str(sz),
-                "isLeverage": 10,
+                "isLeverage": 1,
                 "timeInForce": "GTC",
                 "price": str(round(pr, priceScale)),
                 "reduceOnly": reduceOnly

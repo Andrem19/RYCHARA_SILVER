@@ -268,6 +268,7 @@ class BybitAPI:
             print(f"Error occurred: {e}")
             return None
         
+        
     @staticmethod
     def get_balance(coin: str):
         endpoint = '/v5/account/wallet-balance'
@@ -285,20 +286,21 @@ class BybitAPI:
             print(f"Error occurred: {e}")
             return None
 
-    # @staticmethod
-    # def modify_order(orderLinkId: str, coin: str, buy_sell: str, amount_coins: int, open_price: float, TP_perc = None, SL_perc = None):
-    #     endpoint = '/v5/order/amend'
-    #     method = 'POST'
+    @staticmethod
+    def set_leverage(symbol: str, leverage: int):
+        endpoint = '/v5/position/set-leverage'
+        method = 'POST'
 
-    #     params = {
-    #     "category": "linear",
-    #     "orderId":"32fce206-8396-4fa2-b0ac-4f85ea8565e1",
-    #     "symbol": coin,
-    #     "orderLinkId": orderLinkId,
-    #     "qty": str(amount_coins),
-    #     }
-    #     params_str = json.dumps(params)
-    #     BybitAPI.HTTP_Request(endpoint, method, params_str, "Change_TP_SL")
+        params = {
+            "category": "linear",
+            "symbol": symbol,
+            "buyLeverage": f"{leverage}",
+            "sellLeverage": f"{leverage}"
+        }
+
+        params_str = json.dumps(params)
+
+        BybitAPI.HTTP_Request(endpoint, method, params_str, "set_leverage")
     
     @staticmethod
     def tp_sl(coin: str, buy_sell: str, amount_coins: int, open_price: float, TP_perc = None, SL_perc = None):

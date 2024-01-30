@@ -113,6 +113,7 @@ class BM:
             last_price = float(res['data']['symbols'][0]['last_price'])
             price_precision = float(res['data']['symbols'][0]['price_precision'])
             contract_size = float(res['data']['symbols'][0]['contract_size'])
+            max_lever = int(res['data']['symbols'][0]['max_leverage'])
             if reduceOnly:
                 side = 3 if sd == 'Buy' else 2
             else:
@@ -130,8 +131,9 @@ class BM:
             if reduceOnly:
                 size = amount_coin
             price = round_price(pr, price_precision)
-
-            order = BM.client.post_submit_order(contract_symbol=coin, type=ordType, side=side, leverage='10', open_type='cross', price=str(price), size=int(size), mode=1)
+            lev = 20 if max_lever >= 20 else max_lever
+            BM.client.post_submit_leverage(coin, 'cross', f'{lev}')
+            order = BM.client.post_submit_order(contract_symbol=coin, type=ordType, side=side, leverage=f'{lev}', open_type='cross', price=str(price), size=int(size), mode=1)
             return order[0]['data']['order_id'], pr
         except Exception as e:
             print(f'Error [open_order]: {e}')

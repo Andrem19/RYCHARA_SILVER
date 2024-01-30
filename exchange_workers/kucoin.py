@@ -19,8 +19,9 @@ class KuCoin:
         try:
             curent_price = KuCoin.get_last_price(coin)
             contract_info = KuCoin.market_client.get_contract_detail(f'{coin}M')
+            max_leverage = int(contract_info['maxLeverage'])
             lot = (amount_usdt / curent_price) // contract_info['multiplier']
-        
+            lev = 20 if max_leverage >= 20 else max_leverage
             side = 'buy' if sd == 'Buy' else 'sell'
 
             pr = 0
@@ -31,7 +32,7 @@ class KuCoin:
             if lot < 1:
                 lot = 1
             price = round_price(pr, contract_info['tickSize'])
-            order_id = KuCoin.client.create_limit_order(symbol=f'{coin}M', side=side, lever='10', size=int(lot), price=price)
+            order_id = KuCoin.client.create_limit_order(symbol=f'{coin}M', side=side, lever=f'{lev}', size=int(lot), price=price)
             return order_id['orderId'], pr
         except Exception as e:
             print(f'Error [open_limit_order]: {e}')
@@ -42,9 +43,11 @@ class KuCoin:
         try:
             curent_price = KuCoin.get_last_price(coin)
             contract_info = KuCoin.market_client.get_contract_detail(f'{coin}M')
+            max_leverage = int(contract_info['maxLeverage'])
             lot = (amount_usdt / curent_price) // contract_info['multiplier']
             side = 'buy' if sd == 'Buy' else 'sell'
-            order_id = KuCoin.client.create_market_order(symbol=f'{coin}M', side=side, lever='10', size=int(lot), closeOrder=False)
+            lev = 20 if max_leverage >= 20 else max_leverage
+            order_id = KuCoin.client.create_market_order(symbol=f'{coin}M', side=side, lever=f'{lev}', size=int(lot), closeOrder=False)
             return order_id, curent_price
         except Exception as e:
             print(f'Error [open_market_order]: {e}')

@@ -14,6 +14,7 @@ import requests
 import exchange_workers.exchanges as ex
 from decouple import config
 import json
+from exchange_workers.bybit_http import BybitAPI
 from datetime import datetime
 import time
 from helpers.redisdb import RD
@@ -87,23 +88,42 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BM.init(sv.settings_gl)
 
-# response = requests.get(f'https://api-cloud.bitmart.com/contract/public/details?symbol=SOLUSDT')
+# res = BM.client.post_submit_leverage('ZILUSDT', 'cross', '20')
+# print(res)
+# res, ord = BM.open_order('market', 'ZILUSDT', 'Buy', 20, False)
+# print(res, ord)
+# response = requests.get(f'https://api-cloud.bitmart.com/contract/public/details?symbol=ZILUSDT')
 # res = response.json()
 # print(res)
+# BM.client.post_submit_leverage()
 
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'BX'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# BX.init(sv.settings_gl)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'BX'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+BX.init(sv.settings_gl)
 
-# res, pr = BX.open_order('market', 'GLMRUSDT', 'Buy',20, False)
-# print(res, pr)
+coin = 'ZILUSDT'
+c = f'{coin[:-4]}-{coin[-4:]}'
+# contracts = BX.client.contracts()
+# for cont in contracts:
+#     if cont['symbol'] == c:
+#         print(cont)
+# contracts = BX.client.switch_margin_mode(c, 'CROSSED')
+# contracts = BX.client.margin_mode(c)
+# contracts = BX.client.switch_leverage(c, 'LONG', 20)
+# contracts = BX.client.leverage(c)
+# print(contracts)
+
+res, pr = BX.open_order('market', coin, 'Buy',20, False)
+print(res, pr)
+
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BG'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BG.init(sv.settings_gl)
+
 
 # res, pr = BG.open_order('market', 'SUIUSDT', 'Buy',20, True, 15.6)
 # print(res, pr)
@@ -112,16 +132,19 @@ from helpers.redisdb import RD
 # for coin_info in coin_list['data']:
 #     if coin_info['symbol'] == f'{coin}_UMCBL':
 #         print(coin_info)
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'BN'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-BN.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BN'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BN.init(sv.settings_gl)
 
-res, contr = BN.is_contract_exist('BSVUSDT')
-print(res)
-if 'BSVUSDT' in contr:
-    print('çontract exist')
+# res = BN.client.change_leverage('MKRUSDT', 20)
+# print(res)
+
+# res, contr = BN.is_contract_exist('BSVUSDT')
+# print(res)
+# if 'BSVUSDT' in contr:
+#     print('çontract exist')
 
 # res, pt = BN.open_order('market', 'GALUSDT', 'Sell', 20, False)
 # print(res, pt)
@@ -146,8 +169,15 @@ if 'BSVUSDT' in contr:
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # OKX.init(sv.settings_gl)
 
-# # OKX.get_instrument_info('XRPUSDT')
-# res, pr = OKX.open_order('market', 'GALUSDT', 'Sell', 20, False)
+# res = OKX.get_instrument_info('ETHUSDT')
+# print(res)
+# coin = 'GMTUSDT'
+# c = f'{coin[:-4]}-{coin[-4:]}'
+# res = OKX.accountAPI.set_leverage(lever='20', mgnMode='cross', instId=f'{c}-SWAP', ccy='USDT')
+# print(res)
+
+
+# res, pr = OKX.open_order('market', 'GMTUSDT', 'Sell', 20, False)
 # print(res, pr)
 
 
@@ -166,6 +196,11 @@ if 'BSVUSDT' in contr:
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # GT.init(sv.settings_gl)
+# coin = 'ZILUSDT'
+# c = f'{coin[:-4]}_{coin[-4:]}'
+            
+# contract = GT.futures_api.get_futures_contract('usdt', c)
+# print(contract)
 
 # ord_id, pr = GT.open_order('KLAYUSDT', 'Sell', 20, False)
 # print(ord_id, pr)
@@ -180,17 +215,24 @@ if 'BSVUSDT' in contr:
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # KuCoin.init(sv.settings_gl)
-
+# coin = 'ZILUSDT'
+# contract_info = KuCoin.market_client.get_contract_detail(f'{coin}M')
+# print(contract_info)
+# KuCoin.open_market_order(coin, 'Buy', 20)
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BB'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BB.init(sv.settings_gl)
 
+# acc = BB.instrument_info('ZILUSDT')
+# print(acc)
+
 
 # acc = BB.instrument_info('KLAYUSDT')
 # print(acc)
-# res, pr = BB.open_order('market', 'KLAYUSDT', 'Buy', 20, False)
+# BB.set_leverage('ZILUSDT', 20)
+# res, pr = BB.open_order('market', 'ZILUSDT', 'Buy', 20, False)
 # print(res, pr)
 
 # BB.open_SL('market', 'KLAYUSDT', 'Buy', 88, 0.22612261, 0.004)

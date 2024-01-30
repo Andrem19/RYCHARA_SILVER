@@ -113,8 +113,11 @@ class OKX:
             inst_info = OKX.get_instrument_info(coin)
             contract_val = float(inst_info['ctVal'])
             tik_size = float(inst_info['tickSz'])
+            max_lever = int(inst_info['lever'])
             c = f'{coin[:-4]}-{coin[-4:]}'
             last_price = OKX.get_last_price(coin)
+            lev = 20 if max_lever >= 20 else max_lever
+            OKX.accountAPI.set_leverage(lever=f'{lev}', mgnMode='cross', instId=f'{c}-SWAP', ccy='USDT')
             pr = 0
             if side == 'buy':
                 pr = last_price * (1+0.0001)

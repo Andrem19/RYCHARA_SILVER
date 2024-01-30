@@ -4,6 +4,7 @@ from bingX import ClientError
 from models.settings import Settings
 from decouple import config
 import threading
+from datetime import datetime
 import traceback
 
 class BX:
@@ -38,7 +39,54 @@ class BX:
         except Exception as e:
             print(f'Error [get_last_price]: {e}')
             return 0
-    
+        
+    # @staticmethod
+    # def switch_lev():
+    #     import time
+    #     import requests
+    #     import hmac
+    #     from hashlib import sha256
+    #     api_key = config('BXAPI_1')
+    #     secret_key = config('BXSECRET_1')
+    #     APIURL = "https://open-api.bingx.com"
+    #     APIKEY = api_key
+    #     SECRETKEY = secret_key
+
+    #     def demo():
+    #         payload = {}
+    #         path = '/openApi/swap/v2/trade/leverage'
+    #         method = "POST"
+    #         paramsMap = {
+    #         "leverage": "20",
+    #         "side": "SHORT",
+    #         "symbol": "ZIL-USDT",
+    #         "timestamp": str(int(time.time() * 1000))
+    #     }
+    #         paramsStr = praseParam(paramsMap)
+    #         return send_request(method, path, paramsStr, payload)
+
+    #     def get_sign(api_secret, payload):
+    #         signature = hmac.new(api_secret.encode("utf-8"), payload.encode("utf-8"), digestmod=sha256).hexdigest()
+    #         print("sign=" + signature)
+    #         return signature
+
+
+    #     def send_request(method, path, urlpa, payload):
+    #         url = "%s%s?%s&signature=%s" % (APIURL, path, urlpa, get_sign(SECRETKEY, urlpa))
+    #         print(url)
+    #         headers = {
+    #             'X-BX-APIKEY': APIKEY,
+    #         }
+    #         response = requests.request(method, url, headers=headers, data=payload)
+    #         return response.text
+
+    #     def praseParam(paramsMap):
+    #         sortedKeys = sorted(paramsMap)
+    #         paramsStr = "&".join(["%s=%s" % (x, paramsMap[x]) for x in sortedKeys])
+    #         return paramsStr+"&timestamp="+str(int(time.time() * 1000))
+        
+    #     return demo()
+        
     
     @staticmethod
     def get_position(coin: str):
@@ -100,7 +148,10 @@ class BX:
                     size_tick = cont['size']
                     break
             curent_price = BX.get_last_price(coin)
-
+            lev = BX.client.leverage(c)
+            print(lev)
+            minLeverage = min([lev['maxLongLeverage'], lev['maxShortLeverage']])
+            leverage = 20 if minLeverage >= 20 else minLeverage
             side = 'BUY' if sd == 'Buy' else 'SELL'
             positionSide = 'BOTH'
             lev_side = 'LONG' if sd == 'Buy' else 'SHORT'
@@ -113,8 +164,7 @@ class BX:
             if reduceOnly == True:
                 side = 'SELL' if side == 'BUY' else 'BUY'
                 size = coin_amount
-            print(f'before order: {pr} {size} {positionSide}')
-            BX.client.switch_leverage(symbol=c, side=lev_side, leverage='5')
+            BX.client.switch_leverage(symbol=c, side=lev_side, leverage=f'{leverage}')
             order_info = BX.client.trade_order(
                 symbol=c,
                 type='MARKET',
@@ -123,7 +173,6 @@ class BX:
                 price=pr,
                 quantity=size,
             )
-            print(f'after order {order_info}')
             return order_info['order']['orderId'], order_info['order']['price']
 
         except ClientError as e:
