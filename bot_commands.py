@@ -7,7 +7,6 @@ import helpers.visualizer as vis
 from models.settings import Settings
 from models.position import Position
 import helpers.firebase as fb
-from exchange_workers.bybit_http import BybitAPI
 import shared_vars as sv
 import random
 import facts as fc

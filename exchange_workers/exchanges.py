@@ -1,5 +1,4 @@
 from models.settings import Settings
-from exchange_workers.bybit_http import BybitAPI
 from exchange_workers.kucoin import KuCoin
 from exchange_workers.okx import OKX
 # from exchange_workers.bitrue import BT

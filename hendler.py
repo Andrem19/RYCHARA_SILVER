@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 import shared_vars as sv
-from exchange_workers.bybit_http import BybitAPI
 from exchange_workers.kucoin import KuCoin
 import exchange_workers.exchanges as ex
 from helpers.redisdb import RD

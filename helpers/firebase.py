@@ -6,7 +6,6 @@ from models.settings import Settings
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from exchange_workers.bybit_http import BybitAPI
 
 # Initialize Firebase SDK
 cred = credentials.Certificate('rychara-31314.json')

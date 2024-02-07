@@ -1,7 +1,6 @@
 from models.settings import Settings
 from models.position import Position
 import exchange_workers.exchanges as ex
-from exchange_workers.bybit_http import BybitAPI
 from google.api_core import datetime_helpers
 import json
 from helpers.redisdb import RD

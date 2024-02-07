@@ -14,7 +14,6 @@ import requests
 import exchange_workers.exchanges as ex
 from decouple import config
 import json
-from exchange_workers.bybit_http import BybitAPI
 from datetime import datetime
 import time
 from helpers.redisdb import RD
@@ -97,14 +96,14 @@ from helpers.redisdb import RD
 # print(res)
 # BM.client.post_submit_leverage()
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'BX'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-BX.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BX'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BX.init(sv.settings_gl)
 
-coin = 'ZILUSDT'
-c = f'{coin[:-4]}-{coin[-4:]}'
+# coin = 'ZILUSDT'
+# c = f'{coin[:-4]}-{coin[-4:]}'
 # contracts = BX.client.contracts()
 # for cont in contracts:
 #     if cont['symbol'] == c:
@@ -115,8 +114,8 @@ c = f'{coin[:-4]}-{coin[-4:]}'
 # contracts = BX.client.leverage(c)
 # print(contracts)
 
-res, pr = BX.open_order('market', coin, 'Buy',20, False)
-print(res, pr)
+# res, pr = BX.open_order('market', coin, 'Buy',20, False)
+# print(res, pr)
 
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BG'
@@ -163,14 +162,14 @@ print(res, pr)
 # print(res)
 # coin_info = BN.get_symbol_info('ADAUSDT')
 # print(float('0.0') == 0)
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'OK'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# OKX.init(sv.settings_gl)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'OK'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+OKX.init(sv.settings_gl)
 
-# res = OKX.get_instrument_info('ETHUSDT')
-# print(res)
+res = OKX.get_instrument_info('ETHUSDT')
+print(res)
 # coin = 'GMTUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
 # res = OKX.accountAPI.set_leverage(lever='20', mgnMode='cross', instId=f'{c}-SWAP', ccy='USDT')

@@ -37,7 +37,7 @@ def re_init_global():
 
 def on_signal_change(message):
     signal_collection = RD.load_all_key('coin')
-    re_init_global()
+    # re_init_global()
     signals = hn.decision_maker(signal_collection)
     print(f'on_signal_change {datetime.now()}')
     if signals != -1:
@@ -70,22 +70,22 @@ async def main(args=None):
 
     RD.write_val(f'watchdog:worker:{sv.settings_gl.name}', datetime.now().timestamp())
 
-    # if sv.settings_gl.exchange == 'BB':
-    #     BB.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'KC':
-    #     KuCoin.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'OK':
-    #     OKX.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'BG':
-    #     BG.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'BX':
-    #     BX.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'BM':
-    #     BM.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'GT':
-    #     GT.init(sv.settings_gl)
-    # elif sv.settings_gl.exchange == 'BN':
-    #     BN.init(sv.settings_gl)
+    if sv.settings_gl.exchange == 'BB':
+        BB.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'KC':
+        KuCoin.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'OK':
+        OKX.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'BG':
+        BG.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'BX':
+        BX.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'BM':
+        BM.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'GT':
+        GT.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'BN':
+        BN.init(sv.settings_gl)
 
     print(f'Settings load successfuly with arguments: {args}')
     run_listner()
