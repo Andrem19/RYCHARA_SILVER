@@ -45,6 +45,10 @@ class BB:
             BB.recv_window = str(5000)
             BB.url = "https://api.bybit.com"
 
+    @staticmethod
+    def re_init(settings: Settings):
+        BB.httpClient = None
+        BB.init(settings)
 
     @staticmethod
     def is_contract_exist(coin:str)-> (bool, list):

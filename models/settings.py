@@ -20,6 +20,7 @@ class Settings:
         self.type_of_signal: int = 1
         self.border_saldo: str = '03.12.23'
         self.pause: int = 5
+        self.tos: str = ''
 
     def get_types_dict(self):
         types_dict = {attr: type(getattr(self, attr)) for attr in vars(self)}

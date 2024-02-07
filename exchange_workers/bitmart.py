@@ -39,6 +39,11 @@ class BM:
             # BX.standard = Standard(api_key, secret_key)
 
     @staticmethod
+    def re_init(settings: Settings):
+        BM.client = None
+        BM.init(settings)
+
+    @staticmethod
     def get_last_price(coin):
         try:
             # marketDataAPI =  MarketData.MarketAPI(flag='0')

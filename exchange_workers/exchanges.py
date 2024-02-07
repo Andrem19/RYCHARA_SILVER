@@ -431,7 +431,7 @@ async def take_position(settings: Settings, buy_sell: int):
             old_balance = get_balance()
             entry_pr = get_position_entry_price(position)
             lots = get_position_lots(position)
-            current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe)
+            current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe, settings.tos)
             RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
             await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
             current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)

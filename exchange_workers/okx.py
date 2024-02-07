@@ -44,6 +44,13 @@ class OKX:
 
 
     @staticmethod
+    def re_init(settings: Settings):
+        OKX.accountAPI = None
+        OKX.futuresAPI = None
+        OKX.publicDataAPI = None
+        OKX.init(settings)
+
+    @staticmethod
     def is_contract_exist(coin:str)-> (bool, list):
         try:
             data = OKX.publicDataAPI.get_instruments('SWAP')

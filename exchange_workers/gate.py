@@ -38,6 +38,11 @@ class GT:
             GT.futures_api = FuturesApi(ApiClient(GT.config))
     
     @staticmethod
+    def re_init(settings: Settings):
+        GT.futures_api = None
+        GT.init(settings)
+    
+    @staticmethod
     def get_last_price(coin: str):
         try:
             c = f'{coin[:-4]}_{coin[-4:]}'

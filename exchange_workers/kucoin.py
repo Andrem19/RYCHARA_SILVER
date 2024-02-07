@@ -171,7 +171,10 @@ class KuCoin:
             print(f'Error [get_balance]: {e}')
             return 0
     
-    
+    @staticmethod
+    def re_init(settings: Settings):
+        KuCoin.client = None
+        KuCoin.init(settings)
 
 
     client: Trade = None

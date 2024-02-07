@@ -51,11 +51,12 @@ def handler(sign_dic: dict):
         settings.target_len = target_len 
         settings.timeframe = timeframe
         settings.stop_loss = sl
+        settings.tos = type_of_signal
 
         if settings.amount_usdt > amount_max:
             settings.amount_usdt = amount_max
 
-        settings.take_profit = settings.stop_loss * 7
+        settings.take_profit = 0.2
         close_thread = threading.Thread(target=asyncio.run, args=(work.open_position(settings, signal),))
         close_thread.start()
     else:

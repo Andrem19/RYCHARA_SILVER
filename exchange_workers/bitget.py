@@ -29,6 +29,10 @@ class BG:
             # Set the variables from shared_vars module
             BG.client = Client(api_key, secret_key, passphrase=passphrase)
 
+    @staticmethod
+    def re_init(settings: Settings):
+        BG.client = None
+        BG.init(settings)
 
     @staticmethod
     def is_contract_exist(coin:str)-> bool:

@@ -31,6 +31,11 @@ class BX:
             # BX.standard = Standard(api_key, secret_key)
     
     @staticmethod
+    def re_init(settings: Settings):
+        BX.client = None
+        BX.init(settings)
+    
+    @staticmethod
     def get_last_price(coin: str):
         try:
             c = f'{coin[:-4]}-{coin[-4:]}'

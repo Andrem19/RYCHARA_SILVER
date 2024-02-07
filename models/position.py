@@ -1,7 +1,7 @@
 import json
 
 class Position:
-    def __init__(self, coin, timeopen, priceopen, old_balance, amount, sig, type_of_open, timeframe):
+    def __init__(self, coin, timeopen, priceopen, old_balance, amount, sig, type_of_open, timeframe, tos):
         self.time_open = timeopen
         self.amount = amount
         self.signal = sig
@@ -19,6 +19,7 @@ class Position:
         self.order_sl_id = ''
         self.order_tp_id = ''
         self.timeframe = timeframe
+        self.tos = tos
 
     def to_json(self):
         with open(f"positions/position_{self.coin}.json", "a") as file:
@@ -30,7 +31,7 @@ class Position:
             setattr(self, key, value)
     
     def __str__(self):
-        attributes = ['coin', 'time_open', 'price_open', 'price_close', 'amount', 'duration', 'signal', 'time_close', 'old_balance', 'new_balance', 'type_of_open', 'type_of_close', 'timeframe', 'profit', 'profit_2']
+        attributes = ['coin', 'time_open', 'price_open', 'price_close', 'amount', 'duration', 'tos', 'signal', 'time_close', 'old_balance', 'new_balance', 'type_of_open', 'type_of_close', 'timeframe', 'profit', 'profit_2']
         attribute_values = [getattr(self, attr) for attr in attributes]
         
         attribute_strings = []
