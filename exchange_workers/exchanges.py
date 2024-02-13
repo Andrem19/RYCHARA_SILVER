@@ -436,6 +436,7 @@ async def take_position(settings: Settings, buy_sell: int):
             current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
             return True, current_position
         else:
+            cancel_all_orders(settings.coin, algo=True, order_id=order_id)
             await tel.send_inform_message(settings.telegram_token, 'Position doesn\'t exist after order', '', False)
             return False, None
     except Exception as e:

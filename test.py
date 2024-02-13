@@ -162,14 +162,14 @@ from helpers.redisdb import RD
 # print(res)
 # coin_info = BN.get_symbol_info('ADAUSDT')
 # print(float('0.0') == 0)
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'OK'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-OKX.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'OK'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# OKX.init(sv.settings_gl)
 
-res = OKX.get_instrument_info('ETHUSDT')
-print(res)
+# res = OKX.get_instrument_info('ETHUSDT')
+# print(res)
 # coin = 'GMTUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
 # res = OKX.accountAPI.set_leverage(lever='20', mgnMode='cross', instId=f'{c}-SWAP', ccy='USDT')
@@ -190,19 +190,22 @@ print(res)
 # res, cont = OKX.is_contract_exist('GLMRUSDT')
 # print(res, cont)
 
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'GT'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# GT.init(sv.settings_gl)
-# coin = 'ZILUSDT'
-# c = f'{coin[:-4]}_{coin[-4:]}'
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'GT'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+GT.init(sv.settings_gl)
+
+# res = GT.get_balance()
+# print(res)
+coin = 'ZILUSDT'
+c = f'{coin[:-4]}_{coin[-4:]}'
             
 # contract = GT.futures_api.get_futures_contract('usdt', c)
 # print(contract)
 
-# ord_id, pr = GT.open_order('KLAYUSDT', 'Sell', 20, False)
-# print(ord_id, pr)
+ord_id, pr = GT.open_order('TRBUSDT', 'Sell', 20, False)
+print(ord_id, pr)
 # pos = GT.get_position('KLAYUSDT')
 # print(pos)
 # ord_id = GT.open_SL('KLAYUSDT', 'Sell', -88, 0.2268, 0.004)

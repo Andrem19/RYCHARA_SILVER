@@ -131,11 +131,11 @@ class GT:
             if reduceOnly:
                 size = 0
                 close = True
-            order = FuturesOrder(contract=c, size=size, price='0', tif='ioc', close=close)
+            order = FuturesOrder(contract=c, size=size, price='0', tif='fok', close=close)
             order_response = GT.futures_api.create_futures_order('usdt', order)
             return order_response.id, last_price
         except GateApiException as e:
-            print(f'Error [get_balance]: {e}')
+            print(f'Error [open_order]: {e}')
             return 0, 0
         
     @staticmethod
