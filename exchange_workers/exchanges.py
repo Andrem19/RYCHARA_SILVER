@@ -424,7 +424,7 @@ async def take_position(settings: Settings, buy_sell: int):
         order_id, prise_open = place_market_order(settings, bs)
         print(f'Position trying to plase. Order_id = {order_id}')
         open_time = datetime.now().strftime(sv.time_format)
-        time.sleep(2)
+        time.sleep(3)
         is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
         if is_pos_exist == True:
             old_balance = get_balance()
@@ -440,73 +440,22 @@ async def take_position(settings: Settings, buy_sell: int):
             await tel.send_inform_message(settings.telegram_token, 'Position doesn\'t exist after order', '', False)
             return False, None
     except Exception as e:
-        print(f'Error [place_universal_order {datetime.now()}] {e}')
-        print(traceback.format_exc())
+        cancel_all_orders(settings.coin, algo=True, order_id=order_id)
+        is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
 
-
-async def place_universal_order(settings: Settings, buy_sell: int):
-    try:
-        bs = 'Buy' if buy_sell == 1 else 'Sell'
-        order_id = ''
-        timest = datetime.now().timestamp()
-        print(settings.coin, bs, settings.amount_usdt)
-
-        order_id, prise_want_open = place_limit_order(settings, bs)
-        open_time = datetime.now().strftime(sv.time_format)
-        print('order placed')
-        while True:
-            is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
-            if is_pos_exist == True:
-                old_balance = get_balance()
-                entry_pr = get_position_entry_price(position)
-                lots = get_position_lots(position)
-                current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Limit', settings.timeframe)
-                # fb.write_settings('existing_positions', settings.name, f'{settings.coin}', current_position)
-                RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
-                await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
-                current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
-                return True, current_position
-            
-            time.sleep(1)
-
-            time_obj = datetime.strptime(open_time, sv.time_format)
-            duration = datetime.now() - time_obj
-            duration_seconds = duration.total_seconds()
-
-            if timest + settings.message_timer < datetime.now().timestamp():
-                print(f'trying to take position {duration}')
-                await tel.send_inform_message(settings.telegram_token, f'Trying to take position {settings.coin} {duration}', '', False)
-                timest = datetime.now().timestamp()
-            
-            if duration_seconds > 6:
-                break
-
-        cancel_order(settings, order_id, False)
-        curr_price = get_last_price(settings.coin)
-
-        order_to_take = False
-        if curr_price < prise_want_open* (1+0.002) and bs == 'Buy':
-            order_to_take = True
-        elif curr_price > prise_want_open* (1-0.002) and bs == 'Sell':
-            order_to_take = True
+        if is_pos_exist == True:
+            print('position exist after check in exception')
+            old_balance = get_balance()
+            entry_pr = get_position_entry_price(position)
+            lots = get_position_lots(position)
+            current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe, settings.tos)
+            RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
+            await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
+            current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
+            return True, current_position
         
-        if order_to_take:
-            place_market_order(settings, bs)
-            is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
-            if is_pos_exist:
-                old_balance = get_balance()
-                entry_pr = get_position_entry_price(position)
-                lots = get_position_lots(position)
-                current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe)
-                RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
-                await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
-                current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
-                return True, current_position
-                        
-        await tel.send_inform_message(settings.telegram_token, 'Position doesn\'t exist after order', '', False)
-        return False, None
-    except Exception as e:
-        print(f'Error [place_universal_order {datetime.now()}] {e}')
+        print(f'Error [take_position {datetime.now()}] {e}')
         print(traceback.format_exc())
+        return False, None
 
         
