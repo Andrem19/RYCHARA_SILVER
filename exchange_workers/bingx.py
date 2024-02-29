@@ -159,7 +159,7 @@ class BX:
             leverage = 20 if minLeverage >= 20 else minLeverage
             side = 'BUY' if sd == 'Buy' else 'SELL'
             positionSide = 'BOTH'
-            lev_side = 'LONG' if sd == 'Buy' else 'SHORT'
+            # lev_side = 'LONG' if sd == 'Buy' else 'SHORT'
             size = round(amount_usdt / curent_price, quantityPrecision)
             pr = 0
             if side == 'BUY':
@@ -169,7 +169,7 @@ class BX:
             if reduceOnly == True:
                 side = 'SELL' if side == 'BUY' else 'BUY'
                 size = coin_amount
-            BX.client.switch_leverage(symbol=c, side=lev_side, leverage=f'{leverage}')
+            BX.client.switch_leverage(symbol=c, side='BOTH', leverage=f'{leverage}')
             order_info = BX.client.trade_order(
                 symbol=c,
                 type='MARKET',

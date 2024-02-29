@@ -139,10 +139,15 @@ class BM:
             lev = 20 if max_lever >= 20 else max_lever
             BM.client.post_submit_leverage(coin, 'cross', f'{lev}')
             order = BM.client.post_submit_order(contract_symbol=coin, type=ordType, side=side, leverage=f'{lev}', open_type='cross', price=str(price), size=int(size), mode=1)
-            return order[0]['data']['order_id'], pr
+            
+            if len(order)>0:
+                if 'data' in order[0]:
+                    if 'order_id' in order[0]['data']:
+                        return order[0]['data']['order_id'], pr
+            return 0, pr
         except Exception as e:
             print(f'Error [open_order]: {e}')
-            return 0
+            return 0, pr
         
     @staticmethod
     def open_SL(ordType: str, coin: str, sd: str, amount_lot: str, open_price: float, SL_perc: float):

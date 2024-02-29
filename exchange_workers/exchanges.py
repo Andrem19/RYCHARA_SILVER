@@ -364,7 +364,7 @@ def get_position_lots(position):
         print(f'Error [get_position_lots {datetime.now()}] {e}')
         print(traceback.format_exc())
 
-def get_position_info(coin: str, signal: int):
+def get_position_info(coin: str, signal: int, is_pos_opened = False):
     try:
         position = None
         if sv.settings_gl.exchange == 'BB':
@@ -380,7 +380,10 @@ def get_position_info(coin: str, signal: int):
         elif sv.settings_gl.exchange == 'BM':
             position = BM.get_position(coin)
         elif sv.settings_gl.exchange == 'GT':
-            position = GT.get_position(coin)
+            if is_pos_opened:
+                position = GT.is_position_opened(coin)
+            else:
+                position = GT.get_position(coin)
         elif sv.settings_gl.exchange == 'BN':
             position = BN.get_position(coin)
         # elif sv.settings_gl.exchange == 'BT':
@@ -425,23 +428,30 @@ async def take_position(settings: Settings, buy_sell: int):
         print(f'Position trying to plase. Order_id = {order_id}')
         open_time = datetime.now().strftime(sv.time_format)
         time.sleep(3)
-        is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
-        if is_pos_exist == True:
-            old_balance = get_balance()
-            entry_pr = get_position_entry_price(position)
-            lots = get_position_lots(position)
-            current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe, settings.tos)
-            RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
-            await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
-            current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
-            return True, current_position
-        else:
-            cancel_all_orders(settings.coin, algo=True, order_id=order_id)
-            await tel.send_inform_message(settings.telegram_token, 'Position doesn\'t exist after order', '', False)
-            return False, None
+        first_iter = True
+        while timest+60 > datetime.now().timestamp():
+            is_open = True if first_iter else False
+            is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell, is_open))
+            if is_pos_exist == True:
+                old_balance = get_balance()
+                entry_pr = get_position_entry_price(position)
+                lots = get_position_lots(position)
+                current_position = Position(settings.coin, open_time , entry_pr, old_balance, lots, buy_sell, 'Market', settings.timeframe, settings.tos)
+                RD.rewrite_one_field(f'exs_pos:{settings.name}', settings.coin, json.dumps(vars(current_position)))
+                await tel.send_inform_message(settings.telegram_token, f'Position was taken successfully: {str(current_position)}', '', False)
+                current_position.order_sl_id = add_Stop_Loss(settings, current_position, entry_pr)
+                return True, current_position
+            time.sleep(3)
+            if first_iter:
+                await tel.send_inform_message(settings.telegram_token, 'I\'m waiting for position 60 sec', '', False)
+                first_iter = False
+
+        cancel_all_orders(settings.coin, algo=True, order_id=order_id)
+        await tel.send_inform_message(settings.telegram_token, 'Position doesn\'t exist after order', '', False)
+        return False, None
     except Exception as e:
         cancel_all_orders(settings.coin, algo=True, order_id=order_id)
-        is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell))
+        is_pos_exist, position = is_position_exist(get_position_info(settings.coin, buy_sell, True))
 
         if is_pos_exist == True:
             print('position exist after check in exception')

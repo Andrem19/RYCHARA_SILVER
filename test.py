@@ -104,6 +104,9 @@ from helpers.redisdb import RD
 
 # coin = 'ZILUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
+# res = BX.client.switch_leverage(symbol=c, side='LONG', leverage='20')
+# print(res)
+
 # contracts = BX.client.contracts()
 # for cont in contracts:
 #     if cont['symbol'] == c:
@@ -196,16 +199,21 @@ sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 GT.init(sv.settings_gl)
 
+coin = 'XRPUSDT'
+c = f'{coin[:-4]}_{coin[-4:]}'
+cur_pr = GT.get_last_price(coin)
+pos = GT.open_SL(coin, 'Buy', 20, cur_pr, 0.006)
+print(pos)
 # res = GT.get_balance()
 # print(res)
-coin = 'ZILUSDT'
-c = f'{coin[:-4]}_{coin[-4:]}'
+# coin = 'ZILUSDT'
+# c = f'{coin[:-4]}_{coin[-4:]}'
             
 # contract = GT.futures_api.get_futures_contract('usdt', c)
 # print(contract)
 
-ord_id, pr = GT.open_order('TRBUSDT', 'Sell', 20, False)
-print(ord_id, pr)
+# ord_id, pr = GT.open_order('TRBUSDT', 'Sell', 20, False)
+# print(ord_id, pr)
 # pos = GT.get_position('KLAYUSDT')
 # print(pos)
 # ord_id = GT.open_SL('KLAYUSDT', 'Sell', -88, 0.2268, 0.004)

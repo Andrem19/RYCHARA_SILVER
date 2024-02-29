@@ -101,15 +101,35 @@ class GT:
         try:
             c = f'{coin[:-4]}_{coin[-4:]}'
             positions = GT.futures_api.get_position('usdt', c) #entry_price=0 unrealised_pnl size
+            
             pos = {
                 'entry_price': float(positions.entry_price),
                 'unrealised_pnl': float(positions.unrealised_pnl),
-                'size': float(positions.size)
+                'size': float(positions.size),
+                'value': float(positions.value),
             }
             return pos
         except GateApiException as e:
             print(f'Error [get_position]: {e}')
-            return {'entry_price': 0.0, 'unrealised_pnl': 0.0, 'size': 0.0}
+            return {'entry_price': 0.0, 'unrealised_pnl': 0.0, 'size': 0.0, 'value': 0.0}
+    
+    @staticmethod
+    def is_position_opened(coin: str):
+        c = f'{coin[:-4]}_{coin[-4:]}'
+        positions = GT.futures_api.list_positions('usdt')
+        opened = False
+        for pos in positions:
+            if pos.contract == c:
+                if float(pos.value)>0:
+                    opened = True
+                    pos_c = {
+                        'entry_price': float(pos.entry_price),
+                        'unrealised_pnl': float(pos.unrealised_pnl),
+                        'size': float(pos.size),
+                        'value': float(pos.value),
+                    }
+                    return pos_c
+        return {'entry_price': 0.0, 'unrealised_pnl': 0.0, 'size': 0.0, 'value': 0.0}
     
     @staticmethod
     def open_order(coin: str, sd: str, amount_usdt: int, reduceOnly: bool):
