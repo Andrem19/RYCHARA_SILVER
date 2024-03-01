@@ -43,7 +43,7 @@ def handler(sign_dic: dict):
             sv.coins_in_work[coin_symbol] = sign_dic
         
         settings.pause = int(exchanges_positions_limit['pause'])
-        settings.amount_usdt = int(exchanges_positions_limit['amount']) * koff
+        settings.amount_usdt = float(exchanges_positions_limit['amount']) * koff
 
         settings.coin = coin_symbol
         settings.my_uid = str(uid)

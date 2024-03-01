@@ -5,6 +5,7 @@ import time
 import asyncio
 import shared_vars as sv
 from datetime import datetime
+import helpers.telegram_commander as tel_com
 from helpers.redisdb import RD
 import sys
 import helpers.telegr as tel
@@ -13,6 +14,7 @@ import helpers.telegr as tel
 async def main(args=None):
     sv.manager_instance = int(args[0])
     RD.initialize()
+    tel_com.init_commander()
     sv.exchanges_info = RD.load_all_key('individual_settings')
     mf.api_token = config("WORKER_BOT")
     while True:

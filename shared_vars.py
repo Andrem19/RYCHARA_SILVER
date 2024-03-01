@@ -1,9 +1,11 @@
 import threading
 from models.settings import Settings
+from commander.com import Commander
 
 time_format = "%Y-%m-%d %H:%M:%S"
 settings_gl: Settings = Settings()
 global_var_lock = threading.Lock()
+commander: Commander = None
 coins_in_work = {}
 countet_live = 0
 
