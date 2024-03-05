@@ -2,6 +2,7 @@ import shared_vars as sv
 from commander.com import Commander
 from managers_func import *
 import os
+import traceback
 from exchange_workers.kucoin import KuCoin
 from exchange_workers.okx import OKX
 from exchange_workers.bybit import BB
@@ -12,6 +13,58 @@ from exchange_workers.bitmart import BM
 from exchange_workers.bingx import BX
 from models.settings import Settings
 
+
+def close_all_position(coin: str, amt: float, sd: str, exchange: str):
+    try:
+        if exchange =='BB':
+            BB.open_order('market', coin, sd, 2, True)
+        elif exchange == 'KC':
+            KuCoin.close_position_market(coin, sd)
+        elif exchange == 'OK':
+            OKX.open_order('market', coin, sd, 2, True)
+        elif exchange == 'BG':
+            BG.open_order('market', coin, sd, 2, True, amt)
+        elif exchange == 'BX':
+            BX.open_order('market', coin, sd, 2, True, amt)
+        elif exchange == 'BM':
+            BM.open_order('market', coin, sd, 2, True, amt)
+        elif exchange == 'BN':
+            BN.open_order('market', coin, sd, 2, True, amt)
+        elif exchange == 'GT':
+            GT.open_order(coin, sd, 2, True)
+    except Exception as e:
+        print(f'Error [close_all_position] {datetime.now()}] {e}')
+        print(traceback.format_exc())
+
+def get_exchange_positions():
+   bn_pos = BN.is_any_position_exists()
+   time.sleep(0.2)
+   bb_pos = BB.is_any_position_exists()
+   time.sleep(0.2)
+   bg_pos = BG.is_any_position_exists()
+   time.sleep(0.2)
+   bm_pos = BM.is_any_position_exists()
+   time.sleep(0.2)
+   okx_pos = OKX.is_any_position_exists()
+   time.sleep(0.2)
+   kc_pos = KuCoin.is_any_position_exists()
+   time.sleep(0.2)
+   gt_pos = GT.is_any_position_exists()
+   time.sleep(0.2)
+   bx_pos = BX.is_any_position_exists()
+
+   report = {
+       'BN': bn_pos,
+       'BB': bb_pos,
+       'BG': bg_pos,
+       'BM': bm_pos,
+       'OK': okx_pos,
+       'KC': kc_pos,
+       'GT': gt_pos,
+       'BX': bx_pos,
+   }
+   
+   return report
 
 async def kill_proc(*params):
     try:
@@ -93,17 +146,17 @@ async def check_and_close_all():
         sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
         BN.init(sv.settings_gl)
 
-        report = serv.get_exchange_positions()
+        report = get_exchange_positions()
         await tel.send_inform_message('WORKER_BOT', f'{report}', '', False)
 
         for key, val in report.items():
             if len(val)> 0:
                 for pos in val:
                     trigger = True
-                    serv.close_all_position(pos[0], pos[2], pos[1], key)
+                    close_all_position(pos[0], pos[2], pos[1], key)
                     time.sleep(0.5)
         if trigger:
-            report = serv.get_exchange_positions()
+            report = get_exchange_positions()
             await tel.send_inform_message('WORKER_BOT', f'All position was close:\n{report}', '', False)
     except Exception as e:
         print(f'Error [check_and_close_all]: {e}')
