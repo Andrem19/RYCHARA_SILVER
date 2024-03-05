@@ -4,6 +4,7 @@ import threading
 import time
 import shared_vars as sv
 from models.settings import Settings
+import helpers.services as serv
 import time
 import uuid
 import hashlib
@@ -144,6 +145,30 @@ class BB:
         except Exception as e:
             print(f"Error [get_position]: {e}")
             return None
+    
+    @staticmethod
+    def is_any_position_exists():
+        endpoint = f'/v5/position/list'
+        payload = 'category=linear&settleCoin=USDT'
+        method = 'GET'
+        try:
+            position_list = []
+            result = BB.HTTP_Request(endpoint, method, payload, "get_position")
+            data = json.loads(result)
+
+            if 'result' in data and 'list' in data['result'] and len(data['result']['list']) > 0:
+                for pos in data['result']['list']:
+                    sd = pos['side']
+                    amt = serv.get_position_lots(pos, 'BB')
+                    name = pos['symbol']
+                    inst = [name, sd, amt]
+                    position_list.append(inst)
+                return position_list
+            else:
+                return []
+        except Exception as e:
+            print(f"Error [is_any_position_exists]: {e}")
+            return [1]
         
     @staticmethod
     def instrument_info(symbol: str) -> dict:

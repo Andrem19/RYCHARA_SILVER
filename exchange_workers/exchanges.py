@@ -299,7 +299,7 @@ def is_position_exist(position):
             if position is None:
                 return False, position
         elif sv.settings_gl.exchange == 'GT':
-            if position['size'] == 0:
+            if position.size == 0:
                 return False, position
         elif sv.settings_gl.exchange == 'BN':
             if float(position['positionAmt']) == 0:
@@ -352,7 +352,7 @@ def get_position_lots(position):
         elif sv.settings_gl.exchange == 'BM':
             return float(position['current_amount'])
         elif sv.settings_gl.exchange == 'GT':
-            return float(position['size'])
+            return float(position.size)
         elif sv.settings_gl.exchange == 'BB':
             return float(position['size'])
         elif sv.settings_gl.exchange == 'BN':
@@ -408,7 +408,7 @@ def get_unrealized_PNL(responce: dict):
         elif sv.settings_gl.exchange == 'BM':
             return float(responce['unrealized_value'])
         elif sv.settings_gl.exchange == 'GT':
-            return float(responce['unrealised_pnl'])
+            return float(responce.unrealised_pnl)
         elif sv.settings_gl.exchange == 'BN':
             return float(responce['unrealizedProfit'])
         # elif sv.settings_gl.exchange == 'BT':

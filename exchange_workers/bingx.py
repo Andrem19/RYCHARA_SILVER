@@ -5,6 +5,7 @@ from models.settings import Settings
 from decouple import config
 import threading
 from datetime import datetime
+import helpers.services as serv
 import traceback
 
 class BX:
@@ -104,6 +105,16 @@ class BX:
                 return None
         except Exception as e:
             print(f'Error [get_position]: {e}')
+            return 0
+    
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            position_list = []
+            result = BX.client.close_all_positions()
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
             return 0
     
     @staticmethod

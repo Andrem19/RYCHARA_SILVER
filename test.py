@@ -11,13 +11,30 @@ from exchange_workers.bitmart import BM
 from exchange_workers.bingx import BX
 import exchange_workers.binance as b
 import requests
+import asyncio
+import helpers.telegram_commander as com
 import exchange_workers.exchanges as ex
 from decouple import config
 import json
 from datetime import datetime
 import time
 from helpers.redisdb import RD
+
+sv.manager_instance = 1
+asyncio.run(com.check_and_close_all())
 # RD.initialize()
+# coin = 'XRPUSDT'
+# c = f'{coin[:-4]}-{coin[-4:]}'
+# print(c)
+
+# def convert_name(name: str):
+#     res = name.split('-')
+#     return f'{res[0]}{res[1]}'
+
+# res = convert_name(c)
+# print(res)
+
+
 
 
 # import requests
@@ -87,6 +104,11 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BM.init(sv.settings_gl)
 
+# res = BM.is_any_position_exists()
+# print(res)
+# res = BM.get_position('XRPUSDT')
+# print(res)
+
 # res = BM.client.post_submit_leverage('ZILUSDT', 'cross', '20')
 # print(res)
 # res, ord = BM.open_order('market', 'ZILUSDT', 'Buy', 20, False)
@@ -102,6 +124,8 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BX.init(sv.settings_gl)
 
+
+# BX.is_any_position_exists()
 # coin = 'ZILUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
 # res = BX.client.switch_leverage(symbol=c, side='LONG', leverage='20')
@@ -126,7 +150,8 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BG.init(sv.settings_gl)
 
-
+# res = BG.is_any_position_exists()
+# print(res)
 # res, pr = BG.open_order('market', 'SUIUSDT', 'Buy',20, True, 15.6)
 # print(res, pr)
 # coin = 'XRPUSDT'
@@ -140,6 +165,8 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BN.init(sv.settings_gl)
 
+# res =BN.is_any_position_exists()
+# print(res)
 # res = BN.client.change_leverage('MKRUSDT', 20)
 # print(res)
 
@@ -171,6 +198,8 @@ from helpers.redisdb import RD
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # OKX.init(sv.settings_gl)
 
+# res = OKX.is_any_position_exists()
+# print(res)
 # res = OKX.get_instrument_info('ETHUSDT')
 # print(res)
 # coin = 'GMTUSDT'
@@ -193,17 +222,19 @@ from helpers.redisdb import RD
 # res, cont = OKX.is_contract_exist('GLMRUSDT')
 # print(res, cont)
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'GT'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-GT.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'GT'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# GT.init(sv.settings_gl)
 
-coin = 'XRPUSDT'
-c = f'{coin[:-4]}_{coin[-4:]}'
-cur_pr = GT.get_last_price(coin)
-pos = GT.open_SL(coin, 'Buy', 20, cur_pr, 0.006)
-print(pos)
+# res = GT.is_any_position_exists()
+# print(res)
+# coin = 'XRPUSDT'
+# c = f'{coin[:-4]}_{coin[-4:]}'
+# cur_pr = GT.get_last_price(coin)
+# pos = GT.open_SL(coin, 'Buy', 20, cur_pr, 0.006)
+# print(pos)
 # res = GT.get_balance()
 # print(res)
 # coin = 'ZILUSDT'
@@ -225,6 +256,9 @@ print(pos)
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # KuCoin.init(sv.settings_gl)
+
+# res = KuCoin.is_any_position_exists()
+# print(res)
 # coin = 'ZILUSDT'
 # contract_info = KuCoin.market_client.get_contract_detail(f'{coin}M')
 # print(contract_info)
@@ -235,6 +269,8 @@ print(pos)
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BB.init(sv.settings_gl)
 
+# res = BB.is_any_position_exists()
+# print(res)
 # acc = BB.instrument_info('ZILUSDT')
 # print(acc)
 

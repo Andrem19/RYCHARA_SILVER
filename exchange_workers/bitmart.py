@@ -3,6 +3,7 @@ from bitmart.api_account import APIAccount
 from models.settings import Settings
 from bitmart.lib import cloud_utils, cloud_exceptions
 from bitmart.lib.cloud_log import CloudLog
+import helpers.services as serv
 import requests
 from decouple import config
 import threading
@@ -94,7 +95,29 @@ class BM:
         except Exception as e:
             print(f'Error [get_position]: {e}')
             return 0
-        
+
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            position_list = []
+            result = BM.client.get_all_positions()
+
+            if 'data' in result[0]:
+                if len(result[0]['data'])>0:
+                    for pos in result[0]['data']:
+                        sd = 'Buy' if int(pos['position_type']) == 1 else 'Sell'
+                        amt = serv.get_position_lots(pos, 'BM')
+                        name = pos['symbol']
+                        inst = [name, sd, amt]
+                        position_list.append(inst)
+                else:
+                    return []
+
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return 0
+
     @staticmethod
     def cancel_all_orders(coin: str) -> str:
         try:

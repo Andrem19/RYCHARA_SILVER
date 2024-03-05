@@ -8,9 +8,16 @@ from okx.PublicData import PublicAPI
 from models.settings import Settings
 import okx.MarketData as MarketData
 import threading
+import helpers.services as serv
 import requests
 from datetime import datetime
 import math
+
+def convert_name(name: str):
+    res = name.split('-')
+    coin = f'{res[0]}{res[1]}'
+    print(coin)
+    return coin
 
 def round_price(price, tick_size):
     precision = int(round(-math.log(tick_size, 10)))
@@ -259,6 +266,24 @@ class OKX:
         except Exception as e:
             print(f'Error [get_position {datetime.now()}]: {e}')
             return 0
+
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            positions = OKX.accountAPI.get_positions()
+            position_list = []
+            if len(positions['data']) > 0:
+                for pos in positions['data']:
+                    if float(pos['pos']) != 0:
+                        sd = 'Buy' if float(pos['pos']) > 0 else 'Sell'
+                        amt = serv.get_position_lots(pos, 'OK')
+                        name = convert_name(pos['instId'])
+                        inst = [name, sd, amt]
+                        position_list.append(inst)
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return [1]
 
     @staticmethod
     def get_last_price(coin):

@@ -2,11 +2,15 @@ from kucoin_futures.client import Trade
 from kucoin_futures.client import Market
 from kucoin_futures.client import User
 from models.settings import Settings
+import helpers.services as serv
 from decouple import config
 import requests
 import json
 import threading
 import math
+
+def convert_name(name: str):
+    return name[:-1]
 
 def round_price(price, tick_size):
     precision = int(round(-math.log(tick_size, 10)))
@@ -86,6 +90,28 @@ class KuCoin:
         except Exception as e:
             print(f'Error [get_position]: {e}')
             return 0
+    
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            position_list = []
+            result = KuCoin.client.get_all_position()
+            # print(result)
+            if 'data' in result:
+                if len(result['data']) <=0:
+                    return []
+            else:
+                for pos in result:
+                    if float(pos['currentQty']) != 0:
+                        sd = 'Buy' if float(pos['currentQty']) > 0 else 'Sell'
+                        amt = serv.get_position_lots(pos, 'KC')
+                        name = convert_name(pos['symbol'])
+                        inst = [name, sd, amt]
+                        position_list.append(inst)
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return [1]
     
     @staticmethod
     def open_SL(coin: str, sd: str, amount_lot: str, open_price: float, SL_perc: float) -> str:

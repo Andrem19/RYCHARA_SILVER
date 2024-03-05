@@ -3,9 +3,14 @@ from decouple import config
 from models.settings import Settings
 from pybitget.utils import random_string
 from pybitget.enums import *
+import helpers.services as serv
 import threading
 import requests
 import json
+
+def convert_name(name: str):
+    res = name.split('_')
+    return f'{res[0]}'
 
 class BG:
 
@@ -185,3 +190,21 @@ class BG:
         except Exception as e:
             print(f'Error: {e}')
             return 0
+
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            position_list = []
+            result = BG.client.mix_get_all_positions(productType='UMCBL', marginCoin='USDT')
+            if 'data' in result:
+                for res in result['data']:
+                    if float(res['available']) > 0:
+                        sd = 'Buy' if res['holdSide'] == 'long' else 'Sell'
+                        amt = serv.get_position_lots(res, 'BG')
+                        name = convert_name(res['symbol'])
+                        inst = [name, sd, amt]
+                        position_list.append(inst)
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return [1]

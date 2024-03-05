@@ -9,6 +9,11 @@ from models.settings import Settings
 from gate_api import ApiClient, Configuration, FuturesApi, FuturesOrder, WalletApi, FuturesPriceTriggeredOrder, FuturesPriceTrigger, FuturesInitialOrder
 from gate_api.exceptions import GateApiException
 import math
+import helpers.services as serv
+
+def convert_name(name: str):
+    res = name.split('_')
+    return f'{res[0]}{res[1]}'
 
 def round_price(price, tick_size):
     precision = int(round(-math.log(tick_size, 10)))
@@ -130,6 +135,24 @@ class GT:
                     }
                     return pos_c
         return {'entry_price': 0.0, 'unrealised_pnl': 0.0, 'size': 0.0, 'value': 0.0}
+    
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            positions = GT.futures_api.list_positions('usdt')
+            # print(positions)
+            position_list = []
+            for pos in positions:
+                if float(pos.size) != 0:
+                    sd = 'Buy' if float(pos.size) > 0 else 'Sell'
+                    amt = serv.get_position_lots(pos, 'GT')
+                    name = convert_name(pos.contract)
+                    inst = [name, sd, amt]
+                    position_list.append(inst)
+            return position_list
+        except GateApiException as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return [1]
     
     @staticmethod
     def open_order(coin: str, sd: str, amount_usdt: int, reduceOnly: bool):

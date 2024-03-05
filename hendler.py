@@ -33,6 +33,8 @@ def handler(sign_dic: dict):
         koff = float(sign_dic['koff'])
         type_of_signal = sign_dic['type_of_signal']
 
+        signal_limit = float(RD.get_val(f'signals_limiter:{type_of_signal}'))
+
         settings = Settings()
         set_dict = RD.read_dict('settings:worker')
         sv.settings_gl.from_dict(set_dict)
@@ -54,6 +56,9 @@ def handler(sign_dic: dict):
 
         if settings.amount_usdt > amount_max:
             settings.amount_usdt = amount_max
+        if signal_limit > 0:
+            if settings.amount_usdt > signal_limit:
+                settings.amount_usdt = signal_limit
 
         settings.take_profit = 0.2
         close_thread = threading.Thread(target=asyncio.run, args=(work.open_position(settings, signal),))

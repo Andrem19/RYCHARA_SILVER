@@ -7,6 +7,7 @@ from models.settings import Settings
 from decouple import config
 from datetime import datetime
 import threading
+import helpers.services as serv
 from retry import retry
 
 MAXIMUM_NUMBER_OF_API_CALL_TRIES = 3
@@ -94,6 +95,25 @@ class BN:
             for res in result:
                 if res['symbol'] == coin:
                     return res
+        except Error as e:
+            print(f'Error: {e}')
+            return 0
+        
+    @staticmethod
+    @retry(Exception, tries=MAXIMUM_NUMBER_OF_API_CALL_TRIES, delay=2)
+    def is_any_position_exists():
+        try:
+            position_list = []
+            create_client() #TODO try it
+            result = BN.client.account()['positions'] # unrealizedProfit entryPrice positionAmt
+            for res in result:
+                if float(res['positionAmt']) != 0:
+                    sd = 'Buy' if float(res['positionAmt']) > 0 else 'Sell'
+                    amt = serv.get_position_lots(res, 'BN')
+                    name = res['symbol']
+                    inst = [name, sd, amt]
+                    position_list.append(inst)
+            return position_list
         except Error as e:
             print(f'Error: {e}')
             return 0
