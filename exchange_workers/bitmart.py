@@ -1,4 +1,4 @@
-from bitmart.api_contract import APIContract
+from bitmart.api_contract import APIContract, Auth
 from bitmart.api_account import APIAccount
 from models.settings import Settings
 from bitmart.lib import cloud_utils, cloud_exceptions
@@ -95,12 +95,17 @@ class BM:
         except Exception as e:
             print(f'Error [get_position]: {e}')
             return 0
+    
+    @staticmethod
+    def get_all_positions():
+        return BM.client._request_without_params('GET', '/contract/private/position', Auth.KEYED)
+
 
     @staticmethod
     def is_any_position_exists():
         try:
             position_list = []
-            result = BM.client.get_all_positions()
+            result = BM.get_all_positions()
 
             if 'data' in result[0]:
                 if len(result[0]['data'])>0:
