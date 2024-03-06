@@ -58,18 +58,34 @@ async def open_position(settings: Settings, signal: int):
                 
                 if (last_price < safe_ls_border * (1-0.002) and signal == 1) or (last_price > safe_ls_border * (1+0.002) and signal == 2):
                     if not close_order and res:
-                        print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} save closing market')
+                        print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} save closing market 1')
                         ex.close_time_finish(settings, cur_pos)
                         cur_pos.price_close = ex.get_last_price(settings.coin)
                         cur_pos.type_of_close = 'Market Safe_SL-Lim'
                         close_order = True
+                        time.sleep(6)
+                        res, responce = ex.is_position_exist(ex.get_position_info(settings.coin, signal))
+                        if res:
+                            print(f'[thread: {settings.coin}] Time: {datetime.datetime.now()} save closing market 2')
+                            ex.close_time_finish(settings, cur_pos)
+                            cur_pos.price_close = ex.get_last_price(settings.coin)
+                            cur_pos.type_of_close = 'Market Safe_SL-Lim'
+                            close_order = True
                 if (last_price > safe_tp_border * (1+0.002) and signal == 1) or (last_price < safe_tp_border * (1-0.002) and signal == 2):
                     if not close_order and res:
-                        print(f'[thread: {settings.my_uid}] Time: {datetime.datetime.now()} save closing market')
+                        print(f'[thread: {settings.my_uid}] Time: {datetime.datetime.now()} save closing market 1')
                         ex.close_time_finish(settings, cur_pos)
                         cur_pos.price_close = ex.get_last_price(settings.coin)
                         cur_pos.type_of_close = 'Market Safe_TP-Lim'
                         close_order = True
+                        time.sleep(6)
+                        res, responce = ex.is_position_exist(ex.get_position_info(settings.coin, signal))
+                        if res:
+                            print(f'[thread: {settings.my_uid}] Time: {datetime.datetime.now()} save closing market 2')
+                            ex.close_time_finish(settings, cur_pos)
+                            cur_pos.price_close = ex.get_last_price(settings.coin)
+                            cur_pos.type_of_close = 'Market Safe_TP-Lim'
+                            close_order = True
                 
                 if time_start + settings.message_timer < datetime.datetime.now().timestamp():
                     await handle_message(settings, responce, duration)
