@@ -18,10 +18,44 @@ from decouple import config
 import json
 from datetime import datetime
 import time
+from exchange_workers.bitvenus import BV
 from helpers.redisdb import RD
+from exchange_workers.deepcoin import DC
+from exchange_workers.bit_venus_core import Bitvenus
 
-sv.manager_instance = 1
-asyncio.run(com.check_and_close_all())
+# api_key = config('BVAPI_1')
+# secret_key = config('BVSECRET_1')
+
+# client = Bitvenus(api_key, secret_key)
+
+# res = client.send_request('GET', '/v1/account', {})
+# print(res)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'DC'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+DC.init(sv.settings_gl)
+
+res = DC.get_balance()
+print(res)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BV'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BV.init(sv.settings_gl)
+
+# res = BV.get_balance()
+# print(res)
+# bl, contracts = BV.is_contract_exist('BTCUSDT')
+# i = 0
+# for c in contracts:
+#     i+=1
+#     print(i, c)
+
+# BV.get_balance()
+
+# sv.manager_instance = 1
+# asyncio.run(com.check_and_close_all())
 # RD.initialize()
 # coin = 'XRPUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
