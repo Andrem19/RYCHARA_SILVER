@@ -35,6 +35,7 @@ async def open_position(settings: Settings, signal: int):
             try:
                 time.sleep(settings.pause)
                 last_price = ex.get_last_price(settings.coin)
+                cur_pos.price_close = last_price
                 time_obj = datetime.datetime.strptime(cur_pos.time_open, sv.time_format)
                 duration = datetime.datetime.now() - time_obj
                 duration_seconds = duration.total_seconds()
@@ -88,7 +89,7 @@ async def open_position(settings: Settings, signal: int):
                             close_order = True
                 
                 if time_start + settings.message_timer < datetime.datetime.now().timestamp():
-                    await handle_message(settings, responce, duration)
+                    await handle_message(settings, responce, duration, cur_pos)
                     time_start = datetime.datetime.now().timestamp()
             except Exception as e:
                 print(f'Error: {e}')
@@ -106,9 +107,9 @@ async def open_position(settings: Settings, signal: int):
             await handle_position(cur_pos, settings)
         await tel.send_inform_message(settings.telegram_token, f'Error: {e}\n[worker {settings.coin}] All orders and position closed', '', False)
                 
-async def handle_message(settings: Settings, response: dict, duration):
+async def handle_message(settings: Settings, response: dict, duration, cur_pos: Position):
     left = settings.target_len * 60 - duration.total_seconds()
-    message = f'{settings.name} tf: {settings.timeframe} coin: {settings.coin}\nunrealisedPnl: {ex.get_unrealized_PNL(response)}\ntarg_len: {settings.target_len} duration: {duration}\nleft: {timedelta(seconds=left)}'
+    message = f'{settings.name} tf: {settings.timeframe} coin: {settings.coin}\nunrealisedPnl: {ex.get_unrealized_PNL(response, cur_pos, settings)}\ntarg_len: {settings.target_len} duration: {duration}\nleft: {timedelta(seconds=left)}'
     print(message)
     await tel.send_inform_message(settings.telegram_token, message, '', None)
 

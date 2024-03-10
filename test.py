@@ -9,6 +9,7 @@ from exchange_workers.binance import BN
 from exchange_workers.bitget import BG
 from exchange_workers.bitmart import BM
 from exchange_workers.bingx import BX
+from exchange_workers.phemex.phemex import PM
 import exchange_workers.binance as b
 import requests
 import asyncio
@@ -18,41 +19,61 @@ from decouple import config
 import json
 from datetime import datetime
 import time
-from exchange_workers.bitvenus import BV
+from exchange_workers.xt import XT
 from helpers.redisdb import RD
-from exchange_workers.deepcoin import DC
-from exchange_workers.bit_venus_core import Bitvenus
+from exchange_workers.blofin.blofin import BF
+# PMAPI_1=2e1ab653-b607-4f78-9cee-e7bbeec384d9
+# PMSECRET_1=FydpbH3TVB07pyOecx8OGOR9kKy0hoSkmzPrbSYDTxFmNjc2ZjAyYS1jOGNhLTRiNmEtYTE3MS04NWQwYTM1MWMzYTA
 
-# api_key = config('BVAPI_1')
-# secret_key = config('BVSECRET_1')
-
-# client = Bitvenus(api_key, secret_key)
-
-# res = client.send_request('GET', '/v1/account', {})
-# print(res)
 sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'DC'
+sv.settings_gl.exchange = 'PM'
 sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-DC.init(sv.settings_gl)
+PM.init(sv.settings_gl)
 
-res = DC.get_balance()
+res = PM.get_last_price('XRPUSDT')
 print(res)
+# num = 0
+# for cn in sv.best_set:
+#     if cn not in contracts:
+#         num+=1
+#         print(num, cn)
 # sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'BV'
+# sv.settings_gl.exchange = 'XT'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# BV.init(sv.settings_gl)
+# XT.init(sv.settings_gl)
 
-# res = BV.get_balance()
+# res, ord = XT.open_market_order('XRPUSDT', 'Sell', 20, True, 3)
+# print(res, ord)
+# position = XT.get_position('XRPUSDT', 2)
+# print(position)
+# res = XT.open_SL('XRPUSDT', 'Sell', 3, 0.6127, 0.005)
 # print(res)
-# bl, contracts = BV.is_contract_exist('BTCUSDT')
-# i = 0
-# for c in contracts:
-#     i+=1
-#     print(i, c)
+# XT.cancel_all_orders('XRPUSDT')
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BF'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BF.init(sv.settings_gl)
 
-# BV.get_balance()
+# res = BF.get_balance()
+# res, ord = BF.open_market_order('DOTUSDT', 'Buy', 20, True, 1)
+# print(res, ord)
+# res = BF.get_position('DOTUSDT')
+# print(res)
+# res = BF.open_SL('DOTUSDT', 'Buy', 1, 10.331, 0.005)
+# print(res)
+# BF.cancel_all_orders('DOTUSDT', True)
+# res = DC.open_order('limit', 'XRPUSDT', 'Buy', 20, False)
+# print(res)
+# num = 0
+# for cn in sv.best_set:
+#     if cn not in contracts:
+#         num+=1
+#         print(num, cn)
+
+
 
 # sv.manager_instance = 1
 # asyncio.run(com.check_and_close_all())
@@ -67,50 +88,6 @@ print(res)
 
 # res = convert_name(c)
 # print(res)
-
-
-
-
-# import requests
-# import time
-# import hmac
-# import hashlib
-
-# # Ваши ключи API
-# api_key = config('BNAPI_1')
-# secret_key = config('BNSECRET_1')
-
-# # Базовый URL для Binance API
-# base_url = 'https://api.binance.com'
-
-# # Эндпоинт для проверки статуса аккаунта
-# endpoint = '/sapi/v1/account/apiTradingStatus'
-
-# # Получаем текущее время в миллисекундах
-# timestamp = int(time.time() * 1000)
-
-# # Формируем строку запроса
-# query_string = f'timestamp={timestamp}'
-
-# # Создаем подпись HMAC SHA256
-# signature = hmac.new(secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
-
-# # Добавляем подпись к строке запроса
-# query_string += f'&signature={signature}'
-
-# # Полный URL запроса
-# url = base_url + endpoint + '?' + query_string
-
-# # Заголовки запроса
-# headers = {
-#     'X-MBX-APIKEY': api_key
-# }
-
-# # Отправляем запрос
-# response = requests.get(url, headers=headers)
-
-# # Выводим ответ
-# print(response.json())
 
 # res = requests.get('https://api.binance.com/sapi/v1/account/status')
 # print(res.text)
