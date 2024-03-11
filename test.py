@@ -19,12 +19,23 @@ from decouple import config
 import json
 from datetime import datetime
 import time
+from exchange_workers.btse.btse import BTSE
 from exchange_workers.xt import XT
 from helpers.redisdb import RD
 from exchange_workers.blofin.blofin import BF
-# PMAPI_1=2e1ab653-b607-4f78-9cee-e7bbeec384d9
-# PMSECRET_1=FydpbH3TVB07pyOecx8OGOR9kKy0hoSkmzPrbSYDTxFmNjc2ZjAyYS1jOGNhLTRiNmEtYTE3MS04NWQwYTM1MWMzYTA
 
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BTSE'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BTSE.init(sv.settings_gl)
+
+# res, contracts = BTSE.is_contract_exist('XRPUSDT')
+# num = 0
+# for cn in sv.best_set:
+#     if cn not in contracts:
+#         num+=1
+#         print(num, cn)
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'PM'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
@@ -60,21 +71,21 @@ from exchange_workers.blofin.blofin import BF
 # res = XT.open_SL('XRPUSDT', 'Buy', psize, entrPr, 0.005)
 # print(res)
 # XT.cancel_all_orders('XRPUSDT')
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'BF'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-BF.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BF'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BF.init(sv.settings_gl)
 
-res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
-print(res, ord)
-position = BF.get_position('XRPUSDT')
-print(position)
-psize = abs(int(position['positions']))
-entrPr = float(position['averagePrice'])
-print(f'psize: {psize}')
-res = BF.open_SL('XRPUSDT', 'Buy', psize, entrPr, 0.005)
-print(res)
+# res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
+# print(res, ord)
+# position = BF.get_position('XRPUSDT')
+# print(position)
+# psize = abs(int(position['positions']))
+# entrPr = float(position['averagePrice'])
+# print(f'psize: {psize}')
+# res = BF.open_SL('XRPUSDT', 'Buy', psize, entrPr, 0.005)
+# print(res)
 # res = BF.get_balance()
 # res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
 # print(res, ord)
@@ -153,7 +164,6 @@ print(res)
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BX.init(sv.settings_gl)
 
-
 # BX.is_any_position_exists()
 # coin = 'ZILUSDT'
 # c = f'{coin[:-4]}-{coin[-4:]}'
@@ -178,6 +188,7 @@ print(res)
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # BG.init(sv.settings_gl)
+
 
 # res = BG.is_any_position_exists()
 # print(res)
@@ -291,6 +302,7 @@ print(res)
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # KuCoin.init(sv.settings_gl)
+
 
 # res = KuCoin.is_any_position_exists()
 # print(res)
