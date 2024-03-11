@@ -101,7 +101,6 @@ class XT:
             header = XT.client._create_sign(api_key, api_secret, path=path, bodymod=bodymod, params=params)
             header["Content-Type"] = "application/x-www-form-urlencoded"
             code, result, error = XT.client._fetch(method="GET", url=url, headers=header, params=params, timeout=XT.client.timeout)
-            print(result)
             if 'result' in result:
                 if len(result['result'])> 0:
                     for pos in result['result']:
@@ -145,7 +144,6 @@ class XT:
         try:
             c = f'{coin[:-4].lower()}_{coin[-4:].lower()}'
             _, res, _ = XT.client.cancel_all_order(c)
-            print(res)
         except Exception as e:
             print(f'Error [cancel_all_orders]: {e}')
             return [1]
@@ -156,7 +154,8 @@ class XT:
             c = f'{coin[:-4].lower()}_{coin[-4:].lower()}'
             last_price = XT.get_last_price(coin)
             inst_info = XT.get_instrument_info(coin)
-            size = int((amount_usdt / last_price) // float(inst_info['contractSize']))
+            cont_size = float(inst_info['contractSize'])
+            size = int((amount_usdt / last_price) // cont_size)
             init_lever = int(inst_info['initLeverage'])
             if init_lever<20:
                 pass
@@ -175,7 +174,6 @@ class XT:
                 params['reduceOnly'] = 'true'
                 params['origQty'] = amount_coins
                 params['orderSide'] = 'SELL' if sd == 'Buy' else 'BUY'
-            print(params)
             order = XT.send_order('/future/trade/v1/order/create', params)
             if 'result' in order:
                 return order['result'], last_price
@@ -191,8 +189,7 @@ class XT:
             c = f'{coin[:-4].lower()}_{coin[-4:].lower()}'
             inst_info = XT.get_instrument_info(coin)
             price_precision = int(inst_info['pricePrecision'])
-            # qnPrec = int(inst_info['quantityPrecision'])
-            print(f'pr prec: {price_precision}')
+            qnPrec = int(inst_info['quantityPrecision'])
             position_side = 'LONG' if sd == 'Buy' else 'SHORT'
             # side = 'SELL' if sd == 'Buy' else 'BUY'
             price = 0
@@ -200,26 +197,22 @@ class XT:
                 price = open_price * (1-SL_perc)
             elif sd == 'Sell':
                 price = open_price * (1+SL_perc)
-            print(price)
             price = round(price, price_precision)
-            print(price)
             # executive_price = price * (1 + 0.001) if side == 'Sell' else price * (1 - 0.001)
             # executive_price = round_price(executive_price, price_precision)
             expireTime = datetime.now().timestamp() + 1200
             params = {
                 "positionSide": position_side,
-                "origQty": amount_lot,
+                "origQty": round(amount_lot, qnPrec),
                 'expireTime': int(expireTime),
                 "triggerStopPrice": price,
                 "symbol": c
             }
-            print(params)
             order = XT.send_order('/future/trade/v1/entrust/create-profit', params)
-            print(order)
-            # if 'result' in order:
-            #     return order['result']
-            # else:
-            #     return 0
+            if 'result' in order:
+                return order['result']
+            else:
+                return 0
         except Exception as e:
             print(f'Error [open_SL]: {e}')
             return 0

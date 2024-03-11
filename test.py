@@ -25,15 +25,15 @@ from exchange_workers.blofin.blofin import BF
 # PMAPI_1=2e1ab653-b607-4f78-9cee-e7bbeec384d9
 # PMSECRET_1=FydpbH3TVB07pyOecx8OGOR9kKy0hoSkmzPrbSYDTxFmNjc2ZjAyYS1jOGNhLTRiNmEtYTE3MS04NWQwYTM1MWMzYTA
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'PM'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-PM.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'PM'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# PM.init(sv.settings_gl)
 
 
-res, ord = PM.open_market_order('DOTUSDT', 'Sell', 20, True, 0.004, 32)
-print(res, ord)
+# res, ord = PM.open_market_order('DOTUSDT', 'Sell', 20, True, 0.004, 32)
+# print(res, ord)
 # res = PM.get_position('XRPUSDT')
 # print(res)
 # res = PM.open_SL('XRPUSDT', 'Buy', 31, 0.6254, 0.005)
@@ -44,18 +44,18 @@ print(res, ord)
 #     if cn not in contracts:
 #         num+=1
 #         print(num, cn)
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'XT'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# XT.init(sv.settings_gl)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'XT'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+XT.init(sv.settings_gl)
 
-# res, ord = XT.open_market_order('XRPUSDT', 'Sell', 20, True, 3)
+# res, ord = XT.open_market_order('XRPUSDT', 'Buy', 20, False)
 # print(res, ord)
-# position = XT.get_position('XRPUSDT', 2)
+# position = XT.get_position('XRPUSDT', 1)
 # print(position)
-# res = XT.open_SL('XRPUSDT', 'Sell', 3, 0.6127, 0.005)
-# print(res)
+res = XT.open_SL('XRPUSDT', 'Buy', 2, 0.7267, 0.005)
+print(res)
 # XT.cancel_all_orders('XRPUSDT')
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BF'
@@ -64,7 +64,7 @@ print(res, ord)
 # BF.init(sv.settings_gl)
 
 # res = BF.get_balance()
-# res, ord = BF.open_market_order('DOTUSDT', 'Buy', 20, True, 1)
+# res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
 # print(res, ord)
 # res = BF.get_position('DOTUSDT')
 # print(res)
@@ -245,6 +245,12 @@ print(res, ord)
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # GT.init(sv.settings_gl)
 
+# res, contracts = GT.is_contract_exist('BTCUSDT')
+# num = 0
+# for cn in sv.best_set:
+#     if cn not in contracts:
+#         num+=1
+#         print(num, cn)
 # res = GT.is_any_position_exists()
 # print(res)
 # coin = 'XRPUSDT'

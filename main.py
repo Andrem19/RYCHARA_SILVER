@@ -95,6 +95,12 @@ async def main(args=None):
         GT.init(sv.settings_gl)
     elif sv.settings_gl.exchange == 'BN':
         BN.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'BF':
+        BF.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'XT':
+        XT.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'PM':
+        PM.init(sv.settings_gl)
 
     print(f'Settings load successfuly with arguments: {args}')
     run_listner()

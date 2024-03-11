@@ -171,7 +171,8 @@ class BF:
             size = (amount_usdt / last_price) // float(instr_info['contractValue'])
             tickSz = float(instr_info['tickSize'])
             max_lev = int(instr_info['maxLeverage'])
-
+            if size < 1:
+                size = 1
             if not reduceOnly:
                 time.sleep(1.1)
                 BF.set_leverage(coin, 20, max_lev)
@@ -189,6 +190,7 @@ class BF:
                 body['size'] = str(amount_coins)
 
             ord = BF.client.send_request('POST', '/api/v1/trade/order', body)
+            print(ord)
             if 'data' in ord:
                 if len(ord['data'])>0:
                     return ord['data'][0]['orderId'], last_price
