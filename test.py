@@ -44,25 +44,37 @@ from exchange_workers.blofin.blofin import BF
 #     if cn not in contracts:
 #         num+=1
 #         print(num, cn)
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'XT'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-XT.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'XT'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# XT.init(sv.settings_gl)
 
 # res, ord = XT.open_market_order('XRPUSDT', 'Buy', 20, False)
 # print(res, ord)
 # position = XT.get_position('XRPUSDT', 1)
 # print(position)
-res = XT.open_SL('XRPUSDT', 'Buy', 2, 0.7267, 0.005)
-print(res)
+# psize = int(position['positionSize'])
+# entrPr = float(position['entryPrice'])
+# print(f'psize: {psize}')
+# res = XT.open_SL('XRPUSDT', 'Buy', psize, entrPr, 0.005)
+# print(res)
 # XT.cancel_all_orders('XRPUSDT')
-# sv.settings_gl = Settings()
-# sv.settings_gl.exchange = 'BF'
-# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-# BF.init(sv.settings_gl)
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'BF'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+BF.init(sv.settings_gl)
 
+res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
+print(res, ord)
+position = BF.get_position('XRPUSDT')
+print(position)
+psize = abs(int(position['positions']))
+entrPr = float(position['averagePrice'])
+print(f'psize: {psize}')
+res = BF.open_SL('XRPUSDT', 'Buy', psize, entrPr, 0.005)
+print(res)
 # res = BF.get_balance()
 # res, ord = BF.open_market_order('XRPUSDT', 'Buy', 20, False)
 # print(res, ord)

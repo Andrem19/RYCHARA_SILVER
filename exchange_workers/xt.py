@@ -208,7 +208,9 @@ class XT:
                 "triggerStopPrice": price,
                 "symbol": c
             }
+            print(params)
             order = XT.send_order('/future/trade/v1/entrust/create-profit', params)
+            print(order)
             if 'result' in order:
                 return order['result']
             else:

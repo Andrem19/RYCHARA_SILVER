@@ -411,7 +411,7 @@ def get_position_lots(position):
         elif sv.settings_gl.exchange == 'BN':
             return float(position['positionAmt'])
         elif sv.settings_gl.exchange == 'BF':
-            return float(abs(position['positions']))
+            return float(abs(float(position['positions'])))
         elif sv.settings_gl.exchange == 'XT':
             return float(position['positionSize'])
         elif sv.settings_gl.exchange == 'PM':

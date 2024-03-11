@@ -226,9 +226,9 @@ class BF:
                 "size": str(int(amount_lot)),
                 "reduceOnly": "true",
                 }
-
+            print(body)
             ord = BF.client.send_request('POST', '/api/v1/trade/order-tpsl', body)
-
+            print(ord)
             if 'data' in ord:
                 if len(ord['data'])>0:
                     return ord['data']['tpslId']
