@@ -11,6 +11,7 @@ from exchange_workers.binance import BN
 from exchange_workers.gate import GT
 from exchange_workers.xt import XT
 from exchange_workers.blofin.blofin import BF
+from exchange_workers.phemex.phemex import PM
 from helpers.redisdb import RD
 import hendler as hn
 from datetime import datetime
@@ -40,6 +41,8 @@ def re_init_global():
         BF.init(sv.settings_gl)
     elif sv.settings_gl.exchange == 'XT':
         XT.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'PM':
+        PM.init(sv.settings_gl)
 
 def on_signal_change(message):
     signal_collection = RD.load_all_key('coin')

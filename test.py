@@ -31,8 +31,14 @@ sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
 sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 PM.init(sv.settings_gl)
 
-res = PM.get_last_price('XRPUSDT')
-print(res)
+
+res, ord = PM.open_market_order('DOTUSDT', 'Sell', 20, True, 0.004, 32)
+print(res, ord)
+# res = PM.get_position('XRPUSDT')
+# print(res)
+# res = PM.open_SL('XRPUSDT', 'Buy', 31, 0.6254, 0.005)
+# res = PM.get_position('XRPUSDT')
+# print(res)
 # num = 0
 # for cn in sv.best_set:
 #     if cn not in contracts:

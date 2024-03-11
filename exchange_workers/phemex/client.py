@@ -79,7 +79,7 @@ class Client(object):
         """
         https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#querytradeaccount
         """
-        return self._send_request("get", "/accounts/accountPositions", {'currency':currency})
+        return self._send_request("get", "/g-accounts/accountPositions", {'currency':currency})
     
     def place_order(self, params={}):
         """
@@ -105,7 +105,7 @@ class Client(object):
         """
         https://github.com/phemex/phemex-api-docs/blob/master/Public-API-en.md#625-cancel-all-orders
         """
-        return self._send_request("delete", "/orders/all", 
+        return self._send_request("delete", "/g-orders/all", 
             params={"symbol": symbol, "untriggered": str(untriggered_order).lower()})
     
     def cancel_all_normal_orders(self, symbol):

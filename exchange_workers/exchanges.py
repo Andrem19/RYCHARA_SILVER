@@ -10,6 +10,7 @@ from exchange_workers.binance import BN
 from exchange_workers.blofin.blofin import BF
 from exchange_workers.gate import GT
 from exchange_workers.xt import XT
+from exchange_workers.phemex.phemex import PM
 import helpers.profit as prof
 from models.position import Position
 from helpers.redisdb import RD
@@ -44,6 +45,8 @@ def place_limit_order(settings: Settings, sd: str):
             ord_id, pr = BF.open_market_order(settings.coin, sd, settings.amount_usdt, False)
         elif sv.settings_gl.exchange == 'XT':
             ord_id, pr = XT.open_market_order(settings.coin, sd, settings.amount_usdt, False)
+        elif sv.settings_gl.exchange == 'PM':
+            ord_id, pr = PM.open_market_order(settings.coin, sd, settings.amount_usdt, False, settings.stop_loss)
     except Exception as e:
         print(f'Error [place_market_order {datetime.now()}] {e}')
         print(traceback.format_exc())
@@ -74,6 +77,8 @@ def is_contract_exist(coin: str):
                 res, contracts = BF.is_contract_exist(coin)
             elif sv.settings_gl.exchange == 'XT':
                 res, contracts = XT.is_contract_exist(coin)
+            elif sv.settings_gl.exchange == 'PM':
+                res, contracts = PM.is_contract_exist(coin)
         return res, contracts
     except Exception as e:
         print(f'Error [place_market_order {datetime.now()}] {e}')
@@ -102,6 +107,8 @@ def place_market_order(settings: Settings, sd: str):
             ord_id, pr = BF.open_market_order(settings.coin, sd, settings.amount_usdt, False)
         elif sv.settings_gl.exchange == 'XT':
             ord_id, pr = XT.open_market_order(settings.coin, sd, settings.amount_usdt, False)
+        elif sv.settings_gl.exchange == 'PM':
+            ord_id, pr = PM.open_market_order(settings.coin, sd, settings.amount_usdt, False, settings.stop_loss)
         return ord_id, pr
     except Exception as e:
         print(f'Error [place_market_order {datetime.now()}] {e}')
@@ -135,6 +142,8 @@ def cancel_order(settings: Settings, order_id, algo=True):
             BF.cancel_all_orders(settings.coin, algo)
         elif sv.settings_gl.exchange == 'XT':
             XT.cancel_all_orders(settings.coin)
+        elif sv.settings_gl.exchange == 'PM':
+            PM.cancel_all_orders(settings.coin)
     except Exception as e:
         print(f'Error [cancel_order {datetime.now()}] {e}')
         print(traceback.format_exc())
@@ -164,39 +173,11 @@ def cancel_all_orders(coin: str, algo=True, order_id=None):
             BF.cancel_all_orders(coin, algo)
         elif sv.settings_gl.exchange == 'XT':
             XT.cancel_all_orders(coin)
+        elif sv.settings_gl.exchange == 'PM':
+            PM.cancel_all_orders(coin)
     except Exception as e:
         print(f'Error [cancel_all_orders {datetime.now()}] {e}')
         print(traceback.format_exc())    
-    
-
-def close_limit_time_finish(settings: Settings, position: Position, curent_price: float):
-    try:
-        sd = 'Buy' if position.signal == 1 else 'Sell'
-        order_id = ''
-        if sv.settings_gl.exchange == 'KC':
-            order_id = KuCoin.open_SL(settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'OK':
-            order_id = OKX.open_SL(settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'BG':
-            order_id = BG.open_SL('limit', settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'BX':
-            order_id = BX.open_SL('limit', settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'BM':
-            order_id = BM.open_SL('limit', settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'BB':
-            order_id = BB.open_SL('limit', settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'GT':
-            order_id, _ = GT.open_order(settings.coin, sd, settings.amount_usdt, True)
-        elif sv.settings_gl.exchange == 'BN':
-            order_id = BN.open_SL('limit', settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'BF':
-            order_id = BF.open_SL(settings.coin, sd, position.amount, curent_price, 0.0001)
-        elif sv.settings_gl.exchange == 'XT':
-            order_id = XT.open_SL(settings.coin, sd, position.amount, curent_price, 0.0001)
-        return order_id
-    except Exception as e:
-        print(f'Error [close_limit_time_finish {datetime.now()}] {e}')
-        print(traceback.format_exc())
 
 def add_Stop_Loss(settings: Settings, position: Position, open_price: float):
     try:
@@ -222,6 +203,8 @@ def add_Stop_Loss(settings: Settings, position: Position, open_price: float):
             order_id = BF.open_SL(settings.coin, sd, position.amount, open_price, settings.stop_loss)
         elif sv.settings_gl.exchange == 'XT':
             order_id = XT.open_SL(settings.coin, sd, position.amount, open_price, settings.stop_loss)
+        elif sv.settings_gl.exchange == 'PM':
+            return 0
         return order_id
     except Exception as e:
         print(f'Error [add_Stop_Loss {datetime.now()}] {e}')
@@ -250,6 +233,8 @@ def close_time_finish(settings: Settings, position: Position):
             BF.open_market_order(position.coin, sd, settings.amount_usdt, True, position.amount)
         elif sv.settings_gl.exchange == 'XT':
             XT.open_market_order(position.coin, sd, settings.amount_usdt, True, position.amount)
+        elif sv.settings_gl.exchange == 'PM':
+            PM.open_market_order(position.coin, sd, settings.amount_usdt, True, 0.001, position.amount)
     except Exception as e:
         print(f'Error [close_time_finish {datetime.now()}] {e}')
         print(traceback.format_exc())
@@ -276,6 +261,8 @@ def get_last_price(coin: str):
             return BF.get_last_price(coin)
         elif sv.settings_gl.exchange == 'XT':
             return XT.get_last_price(coin)
+        elif sv.settings_gl.exchange == 'PM':
+            return PM.get_last_price(coin)
     except Exception as e:
         print(f'Error [get_balance {datetime.now()}] {e}')
         print(traceback.format_exc())
@@ -303,6 +290,8 @@ def get_balance():
             balance = BF.get_balance()
         elif sv.settings_gl.exchange == 'XT':
             balance = XT.get_balance()
+        elif sv.settings_gl.exchange == 'PM':
+            balance = PM.get_balance()
         return float(balance)
     except Exception as e:
         print(f'Error [get_balance {datetime.now()}] {e}')
@@ -356,6 +345,12 @@ def is_position_exist(position):
                     return False, position
             elif position is None:
                 return False, position
+        elif sv.settings_gl.exchange == 'PM':
+            if position is not None:
+                if float(position['size']) == 0:
+                    return False, position
+            elif position is None:
+                return False, position
         # elif sv.settings_gl.exchange == 'BT':
         #     if position is None:
         #         return False, position
@@ -387,6 +382,8 @@ def get_position_entry_price(position):
             return float(position['averagePrice'])
         elif sv.settings_gl.exchange == 'XT':
             return float(position['entryPrice'])
+        elif sv.settings_gl.exchange == 'PM':
+            return float(position['avgEntryPriceRp'])
         # elif sv.settings_gl.exchange == 'BT':
         #     if position is not None:
         #         return float(position['openPrice'])
@@ -417,6 +414,8 @@ def get_position_lots(position):
             return float(abs(position['positions']))
         elif sv.settings_gl.exchange == 'XT':
             return float(position['positionSize'])
+        elif sv.settings_gl.exchange == 'PM':
+            return float(position['size'])
         # elif sv.settings_gl.exchange == 'BT':
         #     return float(position['volume'])
     except Exception as e:
@@ -449,6 +448,8 @@ def get_position_info(coin: str, signal: int, is_pos_opened = False):
             position = BF.get_position(coin)
         elif sv.settings_gl.exchange == 'XT':
             position = XT.get_position(coin, signal)
+        elif sv.settings_gl.exchange == 'PM':
+            position = PM.get_position(coin)
         # elif sv.settings_gl.exchange == 'BT':
         #     position = BT.get_position(coin, signal)
         return position
@@ -480,8 +481,12 @@ def get_unrealized_PNL(responce: dict, position: Position, settings: Settings):
             entry_price = float(responce['entryPrice'])
             sig = True if position.signal == 1 else False
             return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
+        elif sv.settings_gl.exchange == 'PM':
+            entry_price = float(responce['avgEntryPriceRp'])
+            sig = True if position.signal == 1 else False
+            return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
         # elif sv.settings_gl.exchange == 'BT':
-        #     return float(responce['openRealizedAmount'])
+        #     return float(responce[''])
     except Exception as e:
         print(f'Error [get_unrealized_PNL {datetime.now()}] {e}')
         print(traceback.format_exc())

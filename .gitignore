@@ -13,3 +13,4 @@ final
 patterns*
 *.csv
 *.png
+old_env.txt

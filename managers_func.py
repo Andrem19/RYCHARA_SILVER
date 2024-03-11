@@ -144,47 +144,15 @@ async def check_and_handle_message():
         else: 
             return
         if message is not None and old_timestamp != message.date.timestamp() and (time.time() - message.date.timestamp()) <= 30:
-            old_timestamp = message.date.timestamp()
-            await sv.commander.exec_command(message.text)
+            chatID = config("CHAT_ID")
+            chat_id = message.chat.id
+            if str(chat_id) == chatID:
+                print('equal')
+                old_timestamp = message.date.timestamp()
+                await sv.commander.exec_command(message.text)
 
     except Exception as e:
         import traceback
         print(f'Error [check_and_handle_message]: {e}')
         print(f"Exception type: {type(e)}")
         print(traceback.format_exc())
-
-# async def check_and_handle_message():
-#     global old_timestamp, api_token
-#     try:
-#         # Create a Telegram bot instance
-#         bot = Bot(token=api_token)
-
-#         # Get the latest message from the bot's chat
-#         updates = await bot.get_updates()
-#         message = ''
-#         if len(updates) > 0:
-#             message = updates[-1].message
-#         else: 
-#             return
-#         # Check if there is a new message
-#         if message is not None and old_timestamp != message.date.timestamp() and (time.time() - message.date.timestamp()) <= 30:
-#             old_timestamp = message.date.timestamp()
-#             sv.last_command = message.text
-#             if message.text == 'kill' or message.text == 'Kill':
-#                 await kill_processes(read_pids_from_file('process_pids.txt'))
-#                 os.remove('process_pids.txt')
-#             if message.text =='restart' or message.text == 'Restart':
-#                 await kill_processes(read_pids_from_file('process_pids.txt'))
-#                 os.remove('process_pids.txt')
-#                 await run_signals()
-#             if message.text =='start' or message.text == 'Start':
-#                 await run_signals()
-            # if message.text =='pids' or message.text == 'Pids':
-            #     pids = read_pids_and_labels_from_file('process_pids.txt')
-            #     msg = ''
-            #     for p in pids:
-            #         msg += f'{p}\n'
-            #     await tel.send_inform_message('WORKER_BOT', msg, '', False)
-#             print("New message handled successfully!")
-#     except Exception as e:
-#         print("An error occurred:", str(e))

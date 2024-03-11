@@ -72,3 +72,169 @@ class PM:
             else: return 0
         except Exception as e:
             print(f'[get_last_price] {e}')
+
+    @staticmethod
+    def instrument_info(coin: str) -> dict:
+        try:
+            c = f'{coin[:-1]}'
+            contracts = PM.client._send_request('get', '/public/products')
+            for con in contracts['data']['products']:
+                if con['type'] == 'Perpetual' and con['symbol']==c:#'contractSize': 5.0, 'lotSize': 1, 'tickSize': 0.0001, 'priceScale': 4, 'pricePrecision': 4, 'maxLeverage': 100
+                    return con
+        except Exception as e:
+            print(f'[instrument_info] {e}')
+
+    @staticmethod
+    def set_leverage(coin: str, leverage: int, max_leverage: int):
+        try:
+            lev = max_leverage if leverage>max_leverage else leverage
+            params = {
+                'symbol': coin,
+                'leverageRr': str(lev),
+            }
+            PM.client._send_request('PUT', '/g-positions/leverage', params)
+        except Exception as e:
+            print(f'[set_leverage]: {e}')
+            return 0
+
+    @staticmethod
+    def is_any_position_exists():
+        try:
+            position_list = []
+            result = PM.client.query_account_n_positions('USDT')
+            print(result)
+            if 'data' in result:
+                if 'positions' in result['data']:
+                    for pos in result['data']['positions']:
+                        if float(pos['size']) != 0:
+                            sd = pos['side']
+                            amt = float(pos['size'])
+                            name = pos['symbol']
+                            inst = [name, sd, amt]
+                            position_list.append(inst)
+            return position_list
+        except Exception as e:
+            print(f'Error [is_any_position_exists]: {e}')
+            return [1]
+
+    @staticmethod
+    def cancel_all_orders(coin: str):
+        try:
+            PM.client.cancel_all(coin)
+        except Exception as e:
+            print(f'Error [cancel_all_orders]: {e}')
+
+    @staticmethod
+    def switch_pos_mode(coin: str):
+        try:
+            params = {
+                'symbol': coin,
+                'targetPosMode': 'OneWay',
+            }
+            PM.client._send_request('PUT', '/g-positions/switch-pos-mode-sync', params)
+        except Exception as e:
+            print(f'Error [switch_pos_mode]: {e}')
+
+
+    @staticmethod
+    def get_position(coin: str) -> dict | None:
+        try:
+            c = f'{coin[:-4]}-{coin[-4:]}'
+            params = {
+                'currency': 'USDT',
+                'symbol': coin
+            }
+            result = PM.client._send_request('GET', '/g-accounts/accountPositions', params)
+            if 'data' in result:
+                if len(result['data']['positions']) > 0:
+                    return result['data']['positions'][0] #'size': '31' 'avgEntryPriceRp': '0.6257'
+            return None
+        except Exception as e:
+            print(f'[get_position]: {e}')
+            return 0
+
+    @staticmethod
+    def open_market_order(coin: str, sd: str, amount_usdt: int, reduceOnly: bool, sl_perc: float, amount_coins = 0):
+        try:
+            last_price = PM.get_last_price(coin)
+            instr_info = PM.instrument_info(coin)
+            lot_size = int(instr_info['lotSize'])
+            price_prec = int(instr_info['pricePrecision'])
+            size = (amount_usdt / last_price)
+            size = math.floor(size / lot_size) * lot_size
+            
+            max_lev = int(instr_info['maxLeverage'])
+            
+            if not reduceOnly:
+                PM.switch_pos_mode(coin)
+                PM.set_leverage(coin, 20, max_lev)
+
+            price = 0
+            if sd == 'Buy':
+                price = last_price * (1-sl_perc)
+            elif sd == 'Sell':
+                price = last_price * (1+sl_perc)
+            price = round(price, price_prec)
+            triger_price = price * (1 - 0.001) if sd == 'Sell' else price * (1 + 0.001)
+            triger_price = round(triger_price, price_prec)
+            params = {
+                "symbol": coin,
+                "reduceOnly":"false",
+                "orderQtyRq": str(size),
+                "ordType": 'Market',
+                "side": sd,
+                "posSide": 'Merged',
+                "stopLossRp": str(triger_price),
+                "slPxRp": str(price),
+            }
+            
+            if reduceOnly == True:
+                params['side'] = 'Buy' if sd == 'Sell' else 'Sell'
+                params['reduceOnly'] = 'true'
+                params['orderQtyRq'] = str(amount_coins)
+                del params['stopLossRp']
+                del params['slPxRp']
+                
+            ord = PM.client._send_request('PUT', '/g-orders/create', params)
+            if 'data' in ord:
+                return ord['data']['orderID'], last_price
+            return 0, last_price
+        except Exception as e:
+            print(f'Error [open_market_order]: {e}')
+            return 0, 0
+
+    @staticmethod
+    def open_SL(coin: str, sd: str, amount_lot: str, open_price: float, SL_perc: float):
+        try:
+            instr_info = PM.instrument_info(coin)
+            price_prec = int(instr_info['pricePrecision'])
+            side = 'Buy' if sd == 'Sell' else 'Sell'
+
+            price = 0
+            if sd == 'Buy':
+                price = open_price * (1-SL_perc)
+            elif sd == 'Sell':
+                price = open_price * (1+SL_perc)
+            price = round(price, price_prec)
+            triger_price = price * (1 + 0.001) if sd == 'Sell' else price * (1 - 0.001)
+            triger_price = round(triger_price, price_prec)
+
+            params = {
+                "symbol": coin,
+                "side": side,
+                "posSide": 'Merged',
+                "reduceOnly":"true",
+                "ordType": 'StopLimit',
+                "stopLossRp": str(triger_price),
+                "slPxRp": str(price),
+                "orderQtyRq": str(amount_lot),                
+            }
+            print(params)
+            ord = PM.client._send_request('PUT', '/g-orders/create', params)
+            print(ord)
+            # if 'data' in ord:
+            #     return ord['data']['orderID']
+            # return 0
+        except Exception as e:
+            print(f'Error [open_SL]: {e}')
+            return 0
