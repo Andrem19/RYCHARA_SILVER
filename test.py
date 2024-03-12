@@ -19,11 +19,29 @@ from decouple import config
 import json
 from datetime import datetime
 import time
+from exchange_workers.bitrue import BT
 from exchange_workers.btse.btse import BTSE
 from exchange_workers.xt import XT
 from helpers.redisdb import RD
 from exchange_workers.blofin.blofin import BF
 
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BT'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BT.init(sv.settings_gl)
+
+# res, ord = BT.open_order('XRPUSDT', 'Buy', 20, False)
+# print(res, ord)
+# pos = BT.get_position('XRPUSDT', 1)
+# print(pos)
+# res  = BT.open_SL('XRPUSDT', 'Buy', 115.0, 0.6901, 0.005)
+# print(res)
+# num = 0
+# for cn in sv.best_set:
+#     if cn not in contracts:
+#         num+=1
+#         print(num, cn)
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BTSE'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'

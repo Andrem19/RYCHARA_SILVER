@@ -139,7 +139,6 @@ class BF:
                 all_orders = BF.client.send_request('GET', f'/api/v1/trade/orders-tpsl-pending?instId={c}')
             else:   
                 all_orders = BF.client.send_request('GET', f'/api/v1/trade/orders-pending?instId={c}')
-            print(all_orders)
             if 'data' in all_orders:
                 if len(all_orders['data'])>0:
                     for order in all_orders['data']:
@@ -150,14 +149,12 @@ class BF:
                             "tpslId": order["tpslId"],
                             "clientOrderId": ""
                             }]
-                            print(f'body: {body}')
                             ord = BF.client.send_request('POST', '/api/v1/trade/cancel-tpsl', body)
                         else:
                             body = {
                             "orderId": order["orderId"]
                             }
                             ord = BF.client.send_request('POST', '/api/v1/trade/cancel-order', body)
-                        print(ord)
         except Exception as e:
             print(f'Error [cancel_all_orders]: {e}')
             return 0
