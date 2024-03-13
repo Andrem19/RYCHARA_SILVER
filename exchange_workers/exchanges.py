@@ -296,6 +296,7 @@ def get_balance():
     except Exception as e:
         print(f'Error [get_balance {datetime.now()}] {e}')
         print(traceback.format_exc())
+        return 0
 
 
 def is_position_exist(position):
@@ -413,7 +414,7 @@ def get_position_lots(position):
         elif sv.settings_gl.exchange == 'BF':
             return abs(int(position['positions']))
         elif sv.settings_gl.exchange == 'XT':
-            return float(position['positionSize'])
+            return int(position['positionSize'])
         elif sv.settings_gl.exchange == 'PM':
             return float(position['size'])
         # elif sv.settings_gl.exchange == 'BT':

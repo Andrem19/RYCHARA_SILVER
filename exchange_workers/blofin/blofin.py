@@ -122,7 +122,7 @@ class BF:
                 if len(result['data'])>0:
                     for res in result['data']:
                         sd = 'Buy' if float(res['positions']) > 0 else 'Sell'
-                        amt = float(res['positions'])
+                        amt = int(res['positions'])
                         name = convert_name(res['instId'])
                         inst = [name, sd, amt]
                         position_list.append(inst)

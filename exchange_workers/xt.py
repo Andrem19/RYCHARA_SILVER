@@ -130,7 +130,7 @@ class XT:
                     for pos in result['result']:
                         if float(pos['positionSize']) != 0:
                             sd = 'Buy' if pos['positionSide']== 'LONG' else 'Sell'
-                            amt = float(pos['positionSize'])
+                            amt = int(pos['positionSize'])
                             name = convert_name(pos['symbol'])
                             inst = [name, sd, amt]
                             position_list.append(inst)

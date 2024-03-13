@@ -77,6 +77,8 @@ class BM:
             if 'data' in account[0]:
                 if len(account[0]['data']) > 0:
                     return account[0]['data'][0]['equity']
+            print(f'Some server problem: {account}')
+            return 0
         except Exception as e:
             print(f'Error: {e}')
             return 0
@@ -87,14 +89,22 @@ class BM:
             c = f'{coin[:-4]}-{coin[-4:]}'
             pos = BM.client.get_position(contract_symbol=coin)
             position = pos[0]
-            if 'data' in position:
-                if len(position['data']) > 0:
-                    return position['data'][0] # [] data empty if no position // open_avg_price current_amount unrealized_value
-                else: return None
-            return None
+            
+            if position['message'] == 'Ok':
+                if 'data' in position:
+                    if len(position['data']) > 0:
+                        return position['data'][0] # [] data empty if no position // open_avg_price current_amount unrealized_value
+                    else: return None
+                return None
+            print(f'server return {pos}')
+            return {'open_avg_price': 0,
+                    'current_amount': 0,
+                    'unrealized_value': 0,}
         except Exception as e:
             print(f'Error [get_position]: {e}')
-            return 0
+            return {'open_avg_price': 0,
+                    'current_amount': 0,
+                    'unrealized_value': 0,}
     
     @staticmethod
     def get_all_positions():

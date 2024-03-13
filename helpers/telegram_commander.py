@@ -11,6 +11,9 @@ from exchange_workers.binance import BN
 from exchange_workers.bitget import BG
 from exchange_workers.bitmart import BM
 from exchange_workers.bingx import BX
+from exchange_workers.blofin.blofin import BF
+from exchange_workers.phemex.phemex import PM
+from exchange_workers.xt import XT
 from models.settings import Settings
 
 
@@ -52,6 +55,12 @@ def get_exchange_positions():
    gt_pos = GT.is_any_position_exists()
    time.sleep(0.2)
    bx_pos = BX.is_any_position_exists()
+   time.sleep(0.2)
+   bf_pos = BF.is_any_position_exists()
+   time.sleep(0.2)
+   xt_pos = XT.is_any_position_exists()
+   time.sleep(0.2)
+   pm_pos = PM.is_any_position_exists()
 
    report = {
        'BN': bn_pos,
@@ -62,6 +71,9 @@ def get_exchange_positions():
        'KC': kc_pos,
        'GT': gt_pos,
        'BX': bx_pos,
+       'PM': pm_pos,
+       'XT': xt_pos,
+       'BF': bf_pos,
    }
    
    return report
@@ -145,6 +157,18 @@ async def check_and_close_all():
         sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
         sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
         BN.init(sv.settings_gl)
+        sv.settings_gl.exchange = 'PM'
+        sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
+        sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
+        PM.init(sv.settings_gl)
+        sv.settings_gl.exchange = 'XT'
+        sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
+        sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
+        XT.init(sv.settings_gl)
+        sv.settings_gl.exchange = 'BF'
+        sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
+        sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
+        BF.init(sv.settings_gl)
 
         report = get_exchange_positions()
         await tel.send_inform_message('WORKER_BOT', f'{report}', '', False)
