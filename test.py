@@ -25,6 +25,10 @@ from exchange_workers.xt import XT
 from helpers.redisdb import RD
 from exchange_workers.blofin.blofin import BF
 
+sv.manager_instance = 1
+asyncio.run(com.balance(str(250)))
+
+
 # sv.settings_gl = Settings()
 # sv.settings_gl.exchange = 'BT'
 # sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
@@ -60,7 +64,8 @@ from exchange_workers.blofin.blofin import BF
 # sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
 # PM.init(sv.settings_gl)
 
-
+# bal = PM.get_balance()
+# print(bal)
 # res, ord = PM.open_market_order('DOTUSDT', 'Sell', 20, True, 0.004, 32)
 # print(res, ord)
 # res = PM.get_position('XRPUSDT')
@@ -156,14 +161,14 @@ from exchange_workers.blofin.blofin import BF
 #     time.sleep(3)
 #     print('loop')
 
-sv.settings_gl = Settings()
-sv.settings_gl.exchange = 'BM'
-sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
-sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
-BM.init(sv.settings_gl)
+# sv.settings_gl = Settings()
+# sv.settings_gl.exchange = 'BM'
+# sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+# sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+# BM.init(sv.settings_gl)
 
-res = BM.get_position('BTCUSDT')
-print(res)
+# res = BM.get_position('BTCUSDT')
+# print(res)
 # res = BM.get_position('XRPUSDT')
 # print(res)
 

@@ -94,7 +94,7 @@ class BB:
         return signature
 
     @staticmethod
-    def get_balance(coin: str):
+    def get_balance(coin: str = 'USDT'):
         endpoint = '/v5/account/wallet-balance'
         payload = 'accountType=UNIFIED&coin=' + coin
         method = 'GET'

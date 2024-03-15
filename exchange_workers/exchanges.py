@@ -460,34 +460,35 @@ def get_position_info(coin: str, signal: int, is_pos_opened = False):
 
 def get_unrealized_PNL(responce: dict, position: Position, settings: Settings):
     try:
-        if sv.settings_gl.exchange == 'BB':
-            return float(responce['unrealisedPnl'])
-        elif sv.settings_gl.exchange == 'KC':
-            return float(responce['unrealisedPnl'])
-        elif sv.settings_gl.exchange == 'OK':
-            return float(responce['data'][0]['uplLastPx'])
-        elif sv.settings_gl.exchange == 'BG':
-            return float(responce['unrealizedPL'])
-        elif sv.settings_gl.exchange == 'BX':
-            return float(responce['unrealizedProfit'])
-        elif sv.settings_gl.exchange == 'BM':
-            return float(responce['unrealized_value'])
-        elif sv.settings_gl.exchange == 'GT':
-            return float(responce['unrealised_pnl'])
-        elif sv.settings_gl.exchange == 'BN':
-            return float(responce['unrealizedProfit'])
-        elif sv.settings_gl.exchange == 'BF':
-            return float(responce['unrealizedPnl'])
-        elif sv.settings_gl.exchange == 'XT':
-            entry_price = float(responce['entryPrice'])
-            sig = True if position.signal == 1 else False
-            return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
-        elif sv.settings_gl.exchange == 'PM':
-            entry_price = float(responce['avgEntryPriceRp'])
-            sig = True if position.signal == 1 else False
-            return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
-        # elif sv.settings_gl.exchange == 'BT':
-        #     return float(responce[''])
+        if responce is not None:
+            if sv.settings_gl.exchange == 'BB':
+                return float(responce['unrealisedPnl'])
+            elif sv.settings_gl.exchange == 'KC':
+                return float(responce['unrealisedPnl'])
+            elif sv.settings_gl.exchange == 'OK':
+                return float(responce['data'][0]['uplLastPx'])
+            elif sv.settings_gl.exchange == 'BG':
+                return float(responce['unrealizedPL'])
+            elif sv.settings_gl.exchange == 'BX':
+                return float(responce['unrealizedProfit'])
+            elif sv.settings_gl.exchange == 'BM':
+                return float(responce['unrealized_value'])
+            elif sv.settings_gl.exchange == 'GT':
+                return float(responce['unrealised_pnl'])
+            elif sv.settings_gl.exchange == 'BN':
+                return float(responce['unrealizedProfit'])
+            elif sv.settings_gl.exchange == 'BF':
+                return float(responce['unrealizedPnl'])
+            elif sv.settings_gl.exchange == 'XT':
+                entry_price = float(responce['entryPrice'])
+                sig = True if position.signal == 1 else False
+                return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
+            elif sv.settings_gl.exchange == 'PM':
+                entry_price = float(responce['avgEntryPriceRp'])
+                sig = True if position.signal == 1 else False
+                return prof.profit_counter(True, entry_price, sig, position.price_close, settings.amount_usdt)
+        else:
+            return 0
     except Exception as e:
         print(f'Error [get_unrealized_PNL {datetime.now()}] {e}')
         print(traceback.format_exc())

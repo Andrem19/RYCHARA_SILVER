@@ -185,11 +185,43 @@ async def check_and_close_all():
     except Exception as e:
         print(f'Error [check_and_close_all]: {e}')
 
+async def balance(trsh: str = '0'):
+    treshold = int(trsh)
+    profit = 0
+    exchanges = {
+       'BN': BN,
+       'BB': BB,
+       'BG': BG,
+       'BM': BM,
+       'OK': OKX,
+       'KC': KuCoin,
+       'BX': BX,
+       'PM': PM,
+       'XT': XT,
+       'BF': BF,
+   }
+    fuull_balance = 0
+    report = {}
+    for key, val in exchanges.items():
+        sv.settings_gl.exchange = key
+        sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
+        sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
+        val.init(sv.settings_gl)
+        bal = float(val.get_balance())
+        fuull_balance+=bal
+        report[key] = round(bal, 2)
+        res = bal - treshold
+        profit+=res
+    print(f'{report}\nProfit: {round(profit, 2)}')
+    await tel.send_inform_message('WORKER_BOT', f'{report}\nFull balance: {round(fuull_balance, 2)}\nProfit: {round(profit, 2)}', '', False)
+
+
 def init_commander():
     sv.commander = Commander(logs=True)
 
     sv.commander.add_command(["kill"], kill_proc)
     sv.commander.add_command(["start"], start_main_1)
+    sv.commander.add_command(["balance"], balance)
     sv.commander.add_command(["amount", "all"], amount_all)
     sv.commander.add_command(["amount", "ex"], amount_ex)
     sv.commander.add_command(["close", "all"], check_and_close_all)

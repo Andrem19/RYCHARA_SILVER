@@ -189,7 +189,7 @@ class KuCoin:
             print(f'Error: [is_contract_exist] {e}')
          
     @staticmethod
-    def get_balance(coin: str):
+    def get_balance(coin: str = 'USDT'):
         try:
             result = KuCoin.user_client.get_account_overview(currency=coin) # 'availableBalance' 'accountEquity'
             return result['accountEquity']
