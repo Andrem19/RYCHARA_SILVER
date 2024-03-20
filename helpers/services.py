@@ -134,6 +134,12 @@ def get_position_lots(position, exchange):
             return float(position['size'])
         elif exchange == 'BN':
             return float(position['positionAmt'])
+        elif exchange == 'BF':
+            return abs(int(position['positions']))
+        elif exchange == 'XT':
+            return int(position['positionSize'])
+        elif exchange == 'PM':
+            return float(position['size'])
         # elif sv.settings_gl.exchange == 'BT':
         #     return float(position['volume'])
     except Exception as e:

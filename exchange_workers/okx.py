@@ -276,7 +276,7 @@ class OKX:
                 for pos in positions['data']:
                     if float(pos['pos']) != 0:
                         sd = 'Buy' if float(pos['pos']) > 0 else 'Sell'
-                        amt = serv.get_position_lots(pos, 'OK')
+                        amt = float(pos['pos'])
                         name = convert_name(pos['instId'])
                         inst = [name, sd, amt]
                         position_list.append(inst)

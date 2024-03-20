@@ -451,8 +451,6 @@ def get_position_info(coin: str, signal: int, is_pos_opened = False):
             position = XT.get_position(coin, signal)
         elif sv.settings_gl.exchange == 'PM':
             position = PM.get_position(coin)
-        # elif sv.settings_gl.exchange == 'BT':
-        #     position = BT.get_position(coin, signal)
         return position
     except Exception as e:
         print(f'Error [get_position_info {datetime.now()}] {e}')
