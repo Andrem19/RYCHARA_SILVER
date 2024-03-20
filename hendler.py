@@ -44,8 +44,9 @@ def handler(sign_dic: dict):
             settings = copy.deepcopy(sv.settings_gl)
             sv.coins_in_work[coin_symbol] = sign_dic
         
+        koff_if_not_all_ex_exist = serv.recalculate_budget_multiplier(float(exchanges_positions_limit['amount']), 10, coin_symbol)
         settings.pause = int(exchanges_positions_limit['pause'])
-        settings.amount_usdt = float(exchanges_positions_limit['amount']) * koff
+        settings.amount_usdt = (float(exchanges_positions_limit['amount']) * koff) * koff_if_not_all_ex_exist
 
         settings.coin = coin_symbol
         settings.my_uid = str(uid)

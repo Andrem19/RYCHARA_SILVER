@@ -19,14 +19,26 @@ from decouple import config
 import json
 from datetime import datetime
 import time
-from exchange_workers.bitrue import BT
 from exchange_workers.btse.btse import BTSE
 from exchange_workers.xt import XT
 from helpers.redisdb import RD
 from exchange_workers.blofin.blofin import BF
 
-sv.manager_instance = 1
-asyncio.run(com.balance(str(250)))
+# res, bn_set = asyncio.run(cso.work(7))
+# print(len(res))
+# num=0
+# for cont in res:
+#     num+=1
+#     print(num, cont)
+# num = 0
+# for cn in res:
+#     if cn not in sv.all_coins and cn in bn_set:
+#         num+=1
+#         print(num, cn)
+res = serv.recalculate_budget_multiplier(250, 10, 'PYTHUSDT')
+print(res)
+# sv.manager_instance = 1
+# asyncio.run(com.balance(str(250)))
 
 
 # sv.settings_gl = Settings()

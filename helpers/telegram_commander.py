@@ -178,6 +178,7 @@ async def check_and_close_all():
                 for pos in val:
                     trigger = True
                     close_all_position(pos[0], pos[2], pos[1], key)
+                    RD.delete_one_field(f'exs_pos:{key}_{sv.manager_instance}', pos[0])
                     time.sleep(0.5)
         if trigger:
             report = get_exchange_positions()
@@ -200,7 +201,7 @@ async def balance(trsh: str = '0'):
        'XT': XT,
        'BF': BF,
    }
-    fuull_balance = 0
+    full_balance = 0
     report = {}
     for key, val in exchanges.items():
         sv.settings_gl.exchange = key
@@ -208,12 +209,12 @@ async def balance(trsh: str = '0'):
         sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
         val.init(sv.settings_gl)
         bal = float(val.get_balance())
-        fuull_balance+=bal
+        full_balance+=bal
         report[key] = round(bal, 2)
-        res = bal - treshold
-        profit+=res
+
+    profit = full_balance - treshold
     print(f'{report}\nProfit: {round(profit, 2)}')
-    await tel.send_inform_message('WORKER_BOT', f'{report}\nFull balance: {round(fuull_balance, 2)}\nProfit: {round(profit, 2)}', '', False)
+    await tel.send_inform_message('WORKER_BOT', f'{report}\nFull balance: {round(full_balance, 2)}\nProfit: {round(profit, 2)}', '', False)
 
 
 def init_commander():
