@@ -6,7 +6,6 @@ from models.position import Position
 from models.settings import Settings
 import shutil
 import time
-import exchange_workers.additional_methods as cso
 from helpers.redisdb import RD
 import traceback
 
@@ -141,15 +140,7 @@ def get_position_lots(position, exchange):
         print(f'Error [get_position_lots {datetime.now()}] {e}')
         print(traceback.format_exc())
 
-def recalculate_budget_multiplier(amount, num_exchanges, coin):
-    total_budget = amount*num_exchanges
-    contracts = cso.load_data_from_file('contracts.json')
-    available_exchanges, ex = cso.contract_exchanges(contracts, coin)
-    available_exchanges = 7 if available_exchanges < 7 else available_exchanges
-    print(f'Contract {coin} exist in {available_exchanges} exchanges. Amount will be recalculate.')
-    budget =  total_budget / available_exchanges
-    koff = budget/amount
-    return koff
+
 
 
 

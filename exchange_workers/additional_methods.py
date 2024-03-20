@@ -78,3 +78,13 @@ async def work(num):
     common = common_contracts(exchanges, num)
     # print(missing)
     return common, exchanges['BN']
+
+def recalculate_budget_multiplier(amount, num_exchanges, coin):
+    total_budget = amount*num_exchanges
+    contracts = load_data_from_file('contracts.json')
+    available_exchanges, ex = contract_exchanges(contracts, coin)
+    available_exchanges = 7 if available_exchanges < 7 else available_exchanges
+    print(f'Contract {coin} exist in {available_exchanges} exchanges. Amount will be recalculate.')
+    budget =  total_budget / available_exchanges
+    koff = budget/amount
+    return koff

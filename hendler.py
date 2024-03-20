@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 import shared_vars as sv
 from exchange_workers.kucoin import KuCoin
+import exchange_workers.additional_methods as cso
 import exchange_workers.exchanges as ex
 from helpers.redisdb import RD
 import work
@@ -44,7 +45,7 @@ def handler(sign_dic: dict):
             settings = copy.deepcopy(sv.settings_gl)
             sv.coins_in_work[coin_symbol] = sign_dic
         
-        koff_if_not_all_ex_exist = serv.recalculate_budget_multiplier(float(exchanges_positions_limit['amount']), 10, coin_symbol)
+        koff_if_not_all_ex_exist = cso.recalculate_budget_multiplier(float(exchanges_positions_limit['amount']), 10, coin_symbol)
         settings.pause = int(exchanges_positions_limit['pause'])
         settings.amount_usdt = (float(exchanges_positions_limit['amount']) * koff) * koff_if_not_all_ex_exist
 
