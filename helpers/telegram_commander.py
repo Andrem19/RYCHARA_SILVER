@@ -24,7 +24,7 @@ def close_all_position(coin: str, amt: float, sd: str, exchange: str):
         elif exchange == 'KC':
             KuCoin.close_position_market(coin, sd)
         elif exchange == 'OK':
-            OKX.open_order('market', coin, sd, 2, True)
+            OKX.open_order('market', coin, sd, 400, True)
         elif exchange == 'BG':
             BG.open_order('market', coin, sd, 2, True, amt)
         elif exchange == 'BX':
@@ -33,8 +33,12 @@ def close_all_position(coin: str, amt: float, sd: str, exchange: str):
             BM.open_order('market', coin, sd, 2, True, amt)
         elif exchange == 'BN':
             BN.open_order('market', coin, sd, 2, True, amt)
-        elif exchange == 'GT':
-            GT.open_order(coin, sd, 2, True)
+        elif exchange == 'BF':
+            BF.open_market_order(coin, sd, 2, True, amt)
+        elif exchange == 'XT':
+            XT.open_market_order(coin, sd, 2, True, amt)
+        elif exchange == 'PM':
+            PM.open_market_order(coin, sd, 2, True, 0.001, amt)
     except Exception as e:
         print(f'Error [close_all_position] {datetime.now()}] {e}')
         print(traceback.format_exc())
