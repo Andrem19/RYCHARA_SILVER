@@ -20,7 +20,9 @@ def handler(sign_dic: dict):
     with sv.global_var_lock:
         exchanges_positions_limit = RD.read_dict(f'individual_settings:{sv.settings_gl.name}')
         position_lenth = len(sv.coins_in_work)
-        if position_lenth >= int(sign_dic['numbers']):
+        if how_many_in_work(sign_dic['type_of_signal']) >= int(sign_dic['numbers']):
+            return
+        if sign_dic['type_of_signal'] == 'ham_1b' and len(sv.coins_in_work)>=int(sign_dic['numbers']):
             return
     timestamp = float(sign_dic['timestamp'])
     is_position_exist, position = ex.is_position_exist(ex.get_position_info(sign_dic['name'], int(sign_dic['signal'])))
@@ -94,3 +96,10 @@ def get_max_rating_dict(dict_list):
 
 def sort_dicts_by_rating(dict_list):
     return sorted(dict_list, key=lambda x: x['rating'], reverse=True)
+
+def how_many_in_work(type_of_signal: str):
+    counter = 0
+    for key, position in sv.coins_in_work.items():
+        if position['type_of_signal'] == type_of_signal:
+            counter += 1
+    return counter
