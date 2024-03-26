@@ -19,11 +19,30 @@ from decouple import config
 import json
 from datetime import datetime
 import time
+from exchange_workers.hyperliquid import HL
 from exchange_workers.btse.btse import BTSE
 from exchange_workers.xt import XT
 from helpers.redisdb import RD
+import exchange_workers.additional_methods as adm
 from exchange_workers.blofin.blofin import BF
+from hyperliquid.utils import constants
+import test_2
 
+sv.settings_gl = Settings()
+sv.settings_gl.exchange = 'HL'
+sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_1'
+sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_1'
+HL.init(sv.settings_gl)
+
+# res = HL.info.all_mids()
+# res, ord = HL.open_market_order('XRPUSDT', 'Sell', 20, False)
+# print(res, ord)
+# pos = HL.get_position('XRPUSDT')
+# print(pos)
+# res, ord = HL.open_market_order('XRPUSDT', 'Sell', 20, True, 32.0)
+# print(res, ord)
+# res = HL.exchange.market_close('XRP', 25, None, 0.01)
+# print(res)
 # res, bn_set = asyncio.run(cso.work(7))
 # print(len(res))
 # num=0
@@ -35,8 +54,8 @@ from exchange_workers.blofin.blofin import BF
 #     if cn not in sv.all_coins and cn in bn_set:
 #         num+=1
 #         print(num, cn)
-res = serv.recalculate_budget_multiplier(250, 10, 'PYTHUSDT')
-print(res)
+# res = serv.recalculate_budget_multiplier(250, 10, 'PYTHUSDT')
+# print(res)
 # sv.manager_instance = 1
 # asyncio.run(com.balance(str(250)))
 

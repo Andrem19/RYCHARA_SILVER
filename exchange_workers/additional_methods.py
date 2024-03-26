@@ -5,6 +5,7 @@ from exchange_workers.binance import BN
 from exchange_workers.bitget import BG
 from exchange_workers.bitmart import BM
 from exchange_workers.bingx import BX
+from exchange_workers.hyperliquid import HL
 from exchange_workers.blofin.blofin import BF
 from exchange_workers.phemex.phemex import PM
 from exchange_workers.xt import XT
@@ -35,6 +36,7 @@ async def get_coin_sets():
         'PM': PM,
         'XT': XT,
         'BF': BF,
+        'HL': HL,
         }
         report = {}
         for key, val in exchanges.items():
