@@ -134,6 +134,19 @@ class HL:
         except Exception as e:
             print(f'Error [get_last_price]: {e}')
             return 0
+
+    @staticmethod
+    def cancel_all_orders(coin: str) -> str:
+        try:
+            c = coin[:-4]
+            open_orders = HL.info.open_orders(HL.address)
+            print(open_orders)
+            for open_order in open_orders:
+                if open_order["coin"] == c:
+                    print(f"cancelling order {open_order}")
+                    HL.exchange.cancel(open_order["coin"], open_order["oid"])
+        except Exception as e:
+            print(f'Error [cancel_all_orders]: {e}')
         
     @staticmethod
     def open_market_order(coin: str, sd: str, amount_usdt: int, reduceOnly: bool, amount_coins = 0.0):
@@ -167,3 +180,31 @@ class HL:
         except Exception as e:
             print(f'Error [open_market_order]: {e}')
             return 0,0
+        
+    @staticmethod
+    def open_SL(coin: str, sd: str, amount_lot: str, open_price: float, SL_perc: float):
+        try:
+            c = coin[:-4]
+            # inst_info = HL.instrument_info(coin)#{'maxLeverage': 50, 'name': 'BTC', 'onlyIsolated': False, 'szDecimals': 5}
+            # szDecimals = int(inst_info['szDecimals'])
+            position_side = False if sd == 'Buy' else True
+
+            price = 0
+            if sd == 'Buy':
+                price = open_price * (1-SL_perc)
+            elif sd == 'Sell':
+                price = open_price * (1+SL_perc)
+
+            trigger_px = price * (1 - 0.001) if sd == 'Sell' else price * (1 + 0.001)
+            triggerPx = round(float(f"{trigger_px:.5g}"), 6)
+            px = round(float(f"{price:.5g}"), 6)
+            stop_order_type = {"trigger": {"triggerPx": triggerPx, "isMarket": True, "tpsl": "sl"}}
+            stop_result = HL.exchange.order(c, position_side, amount_lot, px, stop_order_type, reduce_only=True)
+            print(stop_result)
+            # if 'result' in order:
+            #     return order['result']
+            # else:
+            #     return 0
+        except Exception as e:
+            print(f'Error [open_SL]: {e}')
+            return 0

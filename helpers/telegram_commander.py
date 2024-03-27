@@ -6,6 +6,7 @@ import traceback
 from exchange_workers.kucoin import KuCoin
 from exchange_workers.okx import OKX
 from exchange_workers.bybit import BB
+from exchange_workers.hyperliquid import HL
 from exchange_workers.gate import GT
 from exchange_workers.binance import BN
 from exchange_workers.bitget import BG
@@ -39,6 +40,8 @@ def close_all_position(coin: str, amt: float, sd: str, exchange: str):
             XT.open_market_order(coin, sd, 2, True, amt)
         elif exchange == 'PM':
             PM.open_market_order(coin, sd, 2, True, 0.001, amt)
+        elif exchange == 'HL':
+            HL.open_market_order(coin, sd, 2, True, 0.001, amt)
     except Exception as e:
         print(f'Error [close_all_position] {datetime.now()}] {e}')
         print(traceback.format_exc())
@@ -65,6 +68,8 @@ def get_exchange_positions():
    xt_pos = XT.is_any_position_exists()
    time.sleep(0.2)
    pm_pos = PM.is_any_position_exists()
+   time.sleep(0.2)
+   hl_pos = HL.is_any_position_exists()
 
    report = {
        'BN': bn_pos,
@@ -78,6 +83,7 @@ def get_exchange_positions():
        'PM': pm_pos,
        'XT': xt_pos,
        'BF': bf_pos,
+       'HL': hl_pos,
    }
    
    return report
@@ -173,6 +179,10 @@ async def check_and_close_all():
         sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
         sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
         BF.init(sv.settings_gl)
+        sv.settings_gl.exchange = 'HL'
+        sv.settings_gl.API_KEY = f'{sv.settings_gl.exchange}API_{sv.manager_instance}'
+        sv.settings_gl.SECRET_KEY = f'{sv.settings_gl.exchange}SECRET_{sv.manager_instance}'
+        HL.init(sv.settings_gl)
 
         report = get_exchange_positions()
         await tel.send_inform_message('WORKER_BOT', f'{report}', '', False)
@@ -204,6 +214,7 @@ async def balance(trsh: str = '0'):
        'PM': PM,
        'XT': XT,
        'BF': BF,
+       'HL': HL,
    }
     full_balance = 0
     report = {}

@@ -6,6 +6,7 @@ from exchange_workers.kucoin import KuCoin
 from exchange_workers.bitget import BG
 from exchange_workers.okx import OKX
 from exchange_workers.bitmart import BM
+from exchange_workers.hyperliquid import HL
 from exchange_workers.bingx import BX
 from exchange_workers.binance import BN
 from exchange_workers.gate import GT
@@ -43,6 +44,8 @@ def re_init_global():
         XT.init(sv.settings_gl)
     elif sv.settings_gl.exchange == 'PM':
         PM.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'HL':
+        HL.init(sv.settings_gl)
 
 def on_signal_change(message):
     signal_collection = RD.load_all_key('coin')
@@ -101,6 +104,8 @@ async def main(args=None):
         XT.init(sv.settings_gl)
     elif sv.settings_gl.exchange == 'PM':
         PM.init(sv.settings_gl)
+    elif sv.settings_gl.exchange == 'HL':
+        HL.init(sv.settings_gl)
 
     print(f'Settings load successfuly with arguments: {args}')
     run_listner()
